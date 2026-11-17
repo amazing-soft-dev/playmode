@@ -13,7 +13,10 @@
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test": "node --test \"src/**/*.test.ts\""
+    "test": "node --test \"src/**/*.test.ts\"",
+    "check:images": "node scripts/check-images.mjs",
+    "images": "node scripts/build-images.mjs",
+    "verify:export": "node scripts/verify-export.mjs"
   },
   "dependencies": {
     "next": "16.4.6",
