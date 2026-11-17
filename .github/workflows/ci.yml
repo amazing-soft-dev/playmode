@@ -71,3 +71,65 @@ jobs:
       - name: Verify static export
         if: matrix.target == 'static'
         run: npm run verify:export
+
+  ci-passed:
+    # The single status check the branch rulesets require.
+    name: CI passed
+    if: always()
+    needs: [lint, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Post or update the summary comment
+        if: github.event_name == 'pull_request'
+        # Read-only tokens (for example Dependabot) cannot comment; the gate below still decides.
+        continue-on-error: true
+        uses: actions/github-script@v9
+        env:
+          LINT_RESULT: ${{ needs.lint.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+        with:
+          script: |
+            const marker = "<!-- ci-summary -->";
+            const icon = (r) => ({ success: "✅", failure: "❌", cancelled: "⏹️", skipped: "⏭️" })[r] ?? "❔";
+            const lint = process.env.LINT_RESULT;
+            const build = process.env.BUILD_RESULT;
+            const ok = lint === "success" && build === "success";
+            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              marker,
+              `### ${ok ? "✅ CI passed" : "❌ CI failed"}`,
+              "",
+              "| Job | Result |",
+              "| --- | --- |",
+              `| Lint and type check | ${icon(lint)} ${lint} |`,
+              `| Build (server and static) | ${icon(build)} ${build} |`,
+              "",
+              `Commit \`${sha}\` · [workflow run](${runUrl})`,
+            ].join("\n");
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }
+
+      - name: Require every job to succeed
+        env:
+          LINT_RESULT: ${{ needs.lint.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+        run: |
+          echo "Lint and type check: $LINT_RESULT"
+          echo "Build: $BUILD_RESULT"
+          if [ "$LINT_RESULT" != "success" ] || [ "$BUILD_RESULT" != "success" ]; then
+            exit 1
+          fi
