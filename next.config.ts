@@ -8,6 +8,12 @@ import type { NextConfig } from "next";
 const isStaticExport = process.env.NEXT_OUTPUT === "export";
 
 const nextConfig: NextConfig = {
+  /*
+   * Route handlers are named route.api.ts. The server build treats "api.ts" as a page extension,
+   * so they become routes; the static export drops that extension, so /api is left out of out/
+   * instead of failing the export.
+   */
+  pageExtensions: isStaticExport ? ["tsx", "ts"] : ["api.ts", "tsx", "ts"],
   reactCompiler: true,
   experimental: {
     turbopackRustReactCompiler: true,
