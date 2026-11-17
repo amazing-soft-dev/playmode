@@ -10,6 +10,10 @@ const OUT = "out";
 const REQUIRED_FILES = [
   "index.html",
   "404.html",
+  "sitemap.xml",
+  "robots.txt",
+  "llms.txt",
+  "opengraph-image",
   "favicon.ico",
   "site.webmanifest",
   "icons/light/android-chrome-192x192.png",
