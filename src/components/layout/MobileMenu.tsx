@@ -9,6 +9,7 @@ import { EASE_TEMPLATE } from "@/components/motion";
 import { CloseIcon, MenuIcon } from "@/components/ui";
 import { allPages } from "@/content/site";
 import { cn } from "@/lib/cn";
+import { trapFocus } from "@/lib/focus-trap";
 
 /**
  * Phone and tablet menu (≤991.98px, docs/audit/components/mobile-menu.md). The button sits in the
@@ -23,6 +24,7 @@ export function MobileMenu() {
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const filterRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   const [lastPath, setLastPath] = useState(pathname);
   if (pathname !== lastPath) {
@@ -58,7 +60,7 @@ export function MobileMenu() {
   }, [query]);
 
   return (
-    <div className="md:hidden">
+    <div ref={wrapRef} className="md:hidden" onKeyDown={(e) => open && trapFocus(e, wrapRef.current)}>
       <button
         ref={buttonRef}
         type="button"
