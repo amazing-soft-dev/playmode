@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { MotionProvider } from "@/components/motion";
 
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <MotionProvider>
           <Header />
           <main id="main">{children}</main>
+          <Footer />
         </MotionProvider>
       </body>
     </html>
