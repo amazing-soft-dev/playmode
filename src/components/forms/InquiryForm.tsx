@@ -1,8 +1,8 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
-
 import { Button, Field, Honeypot, Input, Select, Textarea } from "@/components/ui";
+
+import { STATIC_FORM_MESSAGE, useFormPost } from "./useFormPost";
 
 export interface InquiryTopic {
   value: string;
@@ -17,38 +17,13 @@ interface InquiryFormProps {
   successMessage?: string;
 }
 
-type State = { kind: "idle" } | { kind: "sending" } | { kind: "sent" } | { kind: "error"; message: string };
-
 /**
  * Shared contact-style form: name, email, topic and message, plus a honeypot for bots. It posts
- * JSON to a route handler and shows sending, success and error states. Error copy explains what
- * to do next rather than showing raw codes.
+ * JSON to a route handler through useFormPost and shows sending, success, error and static-build
+ * states. Error copy explains what to do next rather than showing raw codes.
  */
 export function InquiryForm({ endpoint, topics, submitLabel = "Send message", successMessage = "Thanks! We'll reply by email within two working days." }: InquiryFormProps) {
-  const [state, setState] = useState<State>({ kind: "idle" });
-
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const body = Object.fromEntries(new FormData(form).entries());
-    setState({ kind: "sending" });
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (res.ok) {
-        form.reset();
-        setState({ kind: "sent" });
-        return;
-      }
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
-      setState({ kind: "error", message: data.error ?? "Something went wrong. Please try again in a moment." });
-    } catch {
-      setState({ kind: "error", message: "We couldn't reach the server. Check your connection and try again." });
-    }
-  };
+  const { state, onSubmit } = useFormPost(endpoint);
 
   if (state.kind === "sent") {
     return (
@@ -84,6 +59,11 @@ export function InquiryForm({ endpoint, topics, submitLabel = "Send message", su
         {state.kind === "error" && (
           <p role="alert" className="type-small text-danger">
             {state.message}
+          </p>
+        )}
+        {state.kind === "static" && (
+          <p role="status" className="type-small text-fog">
+            {STATIC_FORM_MESSAGE}
           </p>
         )}
       </div>
