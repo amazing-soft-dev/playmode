@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Checks that the static export in out/ is complete and contains no server-only routes.
 // Run after `NEXT_OUTPUT=export npm run build`.
-import { existsSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { basename, extname, join } from "node:path";
 
 const OUT = "out";
 
@@ -36,6 +36,23 @@ for (const file of REQUIRED_FILES) {
 
 for (const forbidden of FORBIDDEN_PATHS) {
   if (existsSync(join(OUT, forbidden))) errors.push(`${OUT}/${forbidden} must not exist in a static export`);
+}
+
+// Every photo and poster must ship with its original and all responsive WebP variants.
+if (existsSync("media/manifest.json")) {
+  const { items } = JSON.parse(readFileSync("media/manifest.json", "utf8"));
+  const widths = JSON.parse(readFileSync("media/image-widths.json", "utf8"));
+  for (const item of items) {
+    const published = join(OUT, item.file.slice("public/".length));
+    if (!existsSync(published)) errors.push(`missing media file ${published}`);
+    if (item.kind === "photo" || item.kind === "poster") {
+      const name = basename(item.file, extname(item.file));
+      for (const width of widths) {
+        const variant = join(OUT, "media", "_variants", `${name}-${width}.webp`);
+        if (!existsSync(variant)) errors.push(`missing image variant ${variant} (run npm run images before the build)`);
+      }
+    }
+  }
 }
 
 const countHtml = (dir) =>
