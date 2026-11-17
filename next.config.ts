@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
     turbopackRustReactCompiler: true,
   },
   poweredByHeader: false,
+  // Lets forms explain that the static export has no API (they send email on the live site only).
+  env: { NEXT_PUBLIC_STATIC_EXPORT: isStaticExport ? "1" : "" },
   images: isStaticExport
     ? {
         // No optimizer in a static export: serve the WebP variants made by `npm run images`.
