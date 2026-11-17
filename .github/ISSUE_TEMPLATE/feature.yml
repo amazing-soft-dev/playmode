@@ -1,0 +1,22 @@
+name: Feature or page
+description: Something new to build
+labels: ["type:feat"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What should exist when this is done, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tasks
+      value: |
+        - [ ]
+  - type: input
+    id: branch
+    attributes:
+      label: Branch
+      description: "Prefix + issue number, e.g. feat/12-short-description"

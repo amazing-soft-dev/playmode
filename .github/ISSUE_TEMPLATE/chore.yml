@@ -1,0 +1,16 @@
+name: Build, CI or docs
+description: Tooling, workflows, dependencies or documentation
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options: ["build", "ci", "docs"]
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+    validations:
+      required: true
