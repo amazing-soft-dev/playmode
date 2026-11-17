@@ -19,6 +19,20 @@ export const photos = {
   creator2: "creator-2",
   creator3: "creator-3",
   creator4: "creator-4",
+  // Page banners
+  bannerCreate: "banner-create",
+  bannerDaily: "banner-daily",
+  bannerGallery: "banner-gallery",
+  bannerRecommend: "banner-recommend",
+  bannerPricing: "banner-pricing",
+  bannerAbout: "banner-about",
+  bannerParents: "banner-parents",
+  bannerFaq: "banner-faq",
+  bannerContact: "banner-contact",
+  bannerNews: "banner-news",
+  bannerLogin: "banner-login",
+  notFound: "not-found",
+  bannerAccount: "banner-account",
 } as const;
 
 export type PhotoSlot = keyof typeof photos;
