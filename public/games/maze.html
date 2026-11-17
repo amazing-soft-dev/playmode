@@ -1,0 +1,568 @@
+<!-- playermode:game id=maze scoreMin=0 scoreMax=30000 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>LUMEN MAZE</title>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}
+body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+canvas{display:block;touch-action:none;outline:none}
+</style>
+</head>
+<body>
+<canvas id="game" tabindex="0" aria-label="LUMEN MAZE - timed maze game"></canvas>
+<script>
+window.addEventListener("error", e => parent.postMessage({ type: "error", message: String(e.message).slice(0, 300) }, "*"));
+/* =====================================================================
+   PLAYERMODE STARTER TEMPLATE  -  LUMEN MAZE  (timed maze run)
+   ---------------------------------------------------------------------
+   Every run builds fresh mazes (depth-first carve + a few loops). Your
+   light only reaches a few cells; walls you have seen stay faintly
+   mapped. 75 seconds: clear as many mazes as you can, each one bigger.
+   Exit = 250 + 100 x level + speed bonus. Light orbs = +50 and +2 sec.
+   LOOP     requestAnimationFrame(frame) -> update(dt) -> draw()
+            dt in seconds, clamped to 50 ms; update() skipped while paused.
+   STATES   "title" -> "play" -> "over" -> (Space / R / tap) -> "play"
+   LOGICAL  480 x 270, letterboxed and devicePixelRatio aware.
+   MOVEMENT grid steps with smooth tweening. One press / swipe glides
+            along corridors and stops at junctions (nextDir()).
+   CUSTOMIZE
+     CONFIG ........ run time, move speed, light radius
+     levelSize() ... maze growth per level
+     genMaze() ..... generator (cells are bitmasks N=1 E=2 S=4 W=8)
+     reachExit() ... scoring
+   RULES    single file, no network, no storage, system fonts only.
+   ===================================================================== */
+(function () {
+"use strict";
+
+// ------------------------------------------------------------ CONFIG
+const VIEW_W = 480, VIEW_H = 270;
+const SCORE_MIN = 0, SCORE_MAX = 30000;
+const COL = { bg: "#000", fg: "#fff", grey: "#7b7878", dark: "#333", accent: "#C6FF3D" };
+const FONT = "ui-monospace, monospace";
+const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+const RUN_TIME = 75;          // seconds per run
+const ORB_TIME = 2;           // seconds added per orb
+const MOVE_SPEED = 9;         // cells per second
+const HUD_H = 30;
+const DIRS = [ { dx: 0, dy: -1, bit: 1 }, { dx: 1, dy: 0, bit: 2 }, { dx: 0, dy: 1, bit: 4 }, { dx: -1, dy: 0, bit: 8 } ];
+const OPP = [2, 3, 0, 1];     // N E S W -> opposite
+
+function levelSize(level) {   // columns x rows, grows each level
+  return { C: Math.min(29, 5 + 4 * level), R: Math.min(15, 3 + 2 * level) };
+}
+
+// ------------------------------------------------------------ CANVAS + LETTERBOX
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const view = { scale: 1, ox: 0, oy: 0, dpr: 1 };
+
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const w = window.innerWidth || VIEW_W, h = window.innerHeight || VIEW_H;
+  canvas.width = Math.max(1, Math.round(w * dpr));
+  canvas.height = Math.max(1, Math.round(h * dpr));
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
+  view.dpr = dpr;
+  view.scale = Math.min(w / VIEW_W, h / VIEW_H);
+  view.ox = (w - VIEW_W * view.scale) / 2;
+  view.oy = (h - VIEW_H * view.scale) / 2;
+}
+window.addEventListener("resize", resize);
+resize();
+function toLogical(e) { return { x: (e.clientX - view.ox) / view.scale, y: (e.clientY - view.oy) / view.scale }; }
+
+function beginFrame() {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = COL.bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const k = view.scale * view.dpr;
+  ctx.setTransform(k, 0, 0, k, view.ox * view.dpr, view.oy * view.dpr);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, VIEW_W, VIEW_H);
+  ctx.clip();
+}
+function endFrame() { ctx.restore(); }
+
+function text(str, x, y, size, color, align, bold) {
+  ctx.font = (bold ? "bold " : "") + size + "px " + FONT;
+  ctx.fillStyle = color;
+  ctx.textAlign = align || "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(str, x, y);
+}
+function pad(n, len) { return String(Math.max(0, Math.floor(n))).padStart(len, "0"); }
+
+// ------------------------------------------------------------ SCORE REPORTING
+let reported = false;
+function reportScore(v) {
+  if (reported) return;
+  reported = true;
+  const value = Math.max(SCORE_MIN, Math.min(SCORE_MAX, Math.floor(v) || 0));
+  parent.postMessage({ type: "score", value: value }, "*");
+}
+
+// ------------------------------------------------------------ MAZE GENERATION
+function genMaze(C, R) {
+  const cells = new Uint8Array(C * R);
+  const visited = new Uint8Array(C * R);
+  const stack = [0];
+  visited[0] = 1;
+  while (stack.length) {
+    const cur = stack[stack.length - 1];
+    const cx = cur % C, cy = (cur / C) | 0;
+    const opts = [];
+    for (let d = 0; d < 4; d++) {
+      const nx = cx + DIRS[d].dx, ny = cy + DIRS[d].dy;
+      if (nx >= 0 && ny >= 0 && nx < C && ny < R && !visited[ny * C + nx]) opts.push(d);
+    }
+    if (!opts.length) { stack.pop(); continue; }
+    const d = opts[(Math.random() * opts.length) | 0];
+    const ni = (cy + DIRS[d].dy) * C + cx + DIRS[d].dx;
+    cells[cur] |= DIRS[d].bit;
+    cells[ni] |= DIRS[OPP[d]].bit;
+    visited[ni] = 1;
+    stack.push(ni);
+  }
+  // knock out a few extra walls so there are some loops
+  const extra = Math.floor(C * R * 0.06);
+  for (let i = 0; i < extra; i++) {
+    const cx = (Math.random() * C) | 0, cy = (Math.random() * R) | 0, idx = cy * C + cx;
+    if (Math.random() < 0.5 && cx < C - 1) { cells[idx] |= 2; cells[idx + 1] |= 8; }
+    else if (cy < R - 1) { cells[idx] |= 4; cells[idx + C] |= 1; }
+  }
+  return cells;
+}
+
+function distances(cells, C, R) {
+  const dist = new Int32Array(C * R).fill(-1);
+  const q = [0];
+  dist[0] = 0;
+  for (let h = 0; h < q.length; h++) {
+    const i = q[h], x = i % C, y = (i / C) | 0;
+    for (let d = 0; d < 4; d++) {
+      if (!(cells[i] & DIRS[d].bit)) continue;
+      const j = (y + DIRS[d].dy) * C + x + DIRS[d].dx;
+      if (dist[j] < 0) { dist[j] = dist[i] + 1; q.push(j); }
+    }
+  }
+  return dist;
+}
+
+// ------------------------------------------------------------ STATE
+let state = "title";   // "title" | "play" | "over"
+let paused = false, overT = 0, best = 0, clock = 0;
+let maze, player, level, score, timeLeft, levelT, cleared, orbsGot;
+let glide = -1, queued = -1, queuedT = 0, banner = 0, flash = 0, bump = 0;
+let popups = [], parts = [];
+const held = [];       // stack of held direction keys (last = most recent)
+
+function newLevel() {
+  level++;
+  const s = levelSize(level);
+  const C = s.C, R = s.R;
+  const cells = genMaze(C, R);
+  const dist = distances(cells, C, R);
+  let exit = 0;
+  for (let i = 0; i < C * R; i++) if (dist[i] > dist[exit]) exit = i;
+  // orbs on dead ends (not start / exit)
+  const ends = [];
+  for (let i = 1; i < C * R; i++) {
+    if (i === exit) continue;
+    let n = 0;
+    for (let d = 0; d < 4; d++) if (cells[i] & DIRS[d].bit) n++;
+    if (n === 1) ends.push(i);
+  }
+  for (let i = ends.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; const t = ends[i]; ends[i] = ends[j]; ends[j] = t; }
+  const orbs = ends.slice(0, Math.min(ends.length, 2 + level)).map(i => ({ c: i % C, r: (i / C) | 0, got: false }));
+  const cs = Math.floor(Math.min((VIEW_W - 16) / C, (VIEW_H - HUD_H - 8) / R));
+  maze = {
+    C: C, R: R, cells: cells, cs: cs,
+    ox: Math.floor((VIEW_W - C * cs) / 2),
+    oy: HUD_H + Math.floor((VIEW_H - HUD_H - 4 - R * cs) / 2),
+    seen: new Uint8Array(C * R), walked: new Uint8Array(C * R),
+    exit: { c: exit % C, r: (exit / C) | 0 }, orbs: orbs
+  };
+  player = { c: 0, r: 0, x: 0, y: 0, moving: false, fc: 0, fr: 0, tc: 0, tr: 0, prog: 0 };
+  maze.walked[0] = 1;
+  glide = -1; queued = -1; levelT = 0; banner = 1.3;
+  reveal();
+}
+
+function reset() {
+  level = 0; score = 0; timeLeft = RUN_TIME; cleared = 0; orbsGot = 0;
+  popups = []; parts = []; flash = 0; bump = 0;
+  reported = false;
+  newLevel();
+}
+reset();
+
+function startGame() { reset(); state = "play"; paused = false; }
+
+function endGame() {
+  state = "over"; overT = 0; timeLeft = 0;
+  if (score > best) best = score;
+  reportScore(score);
+}
+
+// ------------------------------------------------------------ MOVEMENT
+function canGo(c, r, d) { return (maze.cells[r * maze.C + c] & DIRS[d].bit) !== 0; }
+function exitCount(c, r) { let n = 0; for (let d = 0; d < 4; d++) if (canGo(c, r, d)) n++; return n; }
+function heldDir() { return held.length ? held[held.length - 1] : -1; }
+function lightCells() { return Math.max(72, maze.cs * 2.5) / maze.cs; }
+
+// Decide the next step when standing still on a cell.
+function nextDir() {
+  const p = player;
+  if (queued >= 0 && canGo(p.c, p.r, queued)) { glide = queued; queued = -1; return glide; }
+  const h = heldDir();
+  if (h >= 0 && canGo(p.c, p.r, h)) { glide = h; queued = -1; return h; }
+  if (glide < 0) return -1;
+  const n = exitCount(p.c, p.r);
+  if (n >= 3) { glide = -1; return -1; }                // stop at junctions
+  if (canGo(p.c, p.r, glide)) return glide;
+  if (n === 2) {                                          // follow corridor bends
+    for (let d = 0; d < 4; d++) if (d !== OPP[glide] && canGo(p.c, p.r, d)) { glide = d; return d; }
+  }
+  glide = -1;
+  return -1;
+}
+
+function request(d) {
+  if (state !== "play" || paused) return;
+  queued = d; queuedT = 0.6;
+  if (!player.moving && !canGo(player.c, player.r, d)) { bump = 0.15; queued = -1; }
+}
+
+function startMove(d) {
+  const p = player;
+  p.moving = true; p.prog = 0;
+  p.fc = p.c; p.fr = p.r;
+  p.tc = p.c + DIRS[d].dx; p.tr = p.r + DIRS[d].dy;
+}
+
+function arrive() {
+  const p = player, m = maze;
+  m.walked[p.r * m.C + p.c] = 1;
+  for (const o of m.orbs) {
+    if (!o.got && o.c === p.c && o.r === p.r) {
+      o.got = true; orbsGot++;
+      score += 50;
+      timeLeft = Math.min(RUN_TIME, timeLeft + ORB_TIME);
+      const sx = m.ox + (p.c + 0.5) * m.cs, sy = m.oy + (p.r + 0.5) * m.cs;
+      popups.push({ x: sx, y: sy - 8, txt: "+50  +" + ORB_TIME + "S", life: 0.9 });
+      burst(sx, sy, 10);
+    }
+  }
+  if (p.c === m.exit.c && p.r === m.exit.r) reachExit();
+}
+
+function reachExit() {
+  const speedBonus = Math.max(0, Math.floor((25 - levelT) * 10));
+  const pts = 250 + 100 * level + speedBonus;
+  score += pts;
+  cleared++;
+  popups.push({ x: VIEW_W / 2, y: VIEW_H / 2 + 22, txt: "EXIT +" + pts, life: 1.3 });
+  flash = REDUCED ? 0.3 : 0.8;
+  newLevel();
+}
+
+function reveal() {
+  const m = maze, p = player, R = lightCells();
+  const r0 = Math.max(0, Math.floor(p.y - R)), r1 = Math.min(m.R - 1, Math.ceil(p.y + R));
+  const c0 = Math.max(0, Math.floor(p.x - R)), c1 = Math.min(m.C - 1, Math.ceil(p.x + R));
+  for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
+    const dx = c - p.x, dy = r - p.y;
+    if (dx * dx + dy * dy <= R * R) m.seen[r * m.C + c] = 1;
+  }
+}
+
+// ------------------------------------------------------------ PARTICLES
+function burst(x, y, n) {
+  const k = REDUCED ? 0.5 : 1;
+  for (let i = 0; i < n * k; i++) {
+    const a = Math.random() * Math.PI * 2, s = 30 + Math.random() * 110;
+    parts.push({ x: x, y: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0.5 });
+  }
+}
+
+// ------------------------------------------------------------ UPDATE
+function update(dt) {
+  overT += dt;
+  flash = Math.max(0, flash - 2 * dt);
+  bump = Math.max(0, bump - dt);
+  banner = Math.max(0, banner - dt);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const q = parts[i];
+    q.life -= dt; q.x += q.vx * dt; q.y += q.vy * dt;
+    if (q.life <= 0) parts.splice(i, 1);
+  }
+  for (let i = popups.length - 1; i >= 0; i--) {
+    popups[i].life -= dt; popups[i].y -= 22 * dt;
+    if (popups[i].life <= 0) popups.splice(i, 1);
+  }
+  if (state !== "play") return;
+
+  timeLeft -= dt;
+  levelT += dt;
+  if (timeLeft <= 0) { endGame(); return; }
+  if (queued >= 0) { queuedT -= dt; if (queuedT <= 0) queued = -1; }
+
+  const p = player;
+  if (p.moving) {
+    p.prog += MOVE_SPEED * dt;
+    if (p.prog >= 1) {
+      p.c = p.tc; p.r = p.tr; p.moving = false; p.prog = 0;
+      p.x = p.c; p.y = p.r;
+      const lvBefore = level;
+      arrive();
+      if (level !== lvBefore) return;        // new maze generated
+    } else {
+      p.x = p.fc + (p.tc - p.fc) * p.prog;
+      p.y = p.fr + (p.tr - p.fr) * p.prog;
+    }
+  }
+  if (!p.moving) {
+    const d = nextDir();
+    if (d >= 0) startMove(d);
+  }
+  reveal();
+}
+
+// ------------------------------------------------------------ DRAW
+function draw() {
+  beginFrame();
+  drawMaze();
+  drawHUD();
+  if (state === "play" && banner > 0) {
+    ctx.globalAlpha = Math.min(1, banner * 2);
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillRect(0, VIEW_H / 2 - 20, VIEW_W, 40);
+    text("[ LEVEL " + level + " ]  " + maze.C + " x " + maze.R, VIEW_W / 2, VIEW_H / 2, 16, COL.accent, "center", true);
+    ctx.globalAlpha = 1;
+  }
+  for (const q of popups) {
+    ctx.globalAlpha = Math.min(1, q.life * 2);
+    text(q.txt, q.x, q.y, 11, COL.accent, "center", true);
+  }
+  ctx.globalAlpha = 1;
+  if (state === "title") drawTitle();
+  else if (state === "over") drawOver();
+  if (paused) drawPaused();
+  if (flash > 0) {
+    ctx.fillStyle = "rgba(198,255,61," + (flash * 0.2).toFixed(3) + ")";
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+  }
+  endFrame();
+}
+
+function drawMaze() {
+  const m = maze, p = player, cs = m.cs;
+  const px = m.ox + (p.x + 0.5) * cs, py = m.oy + (p.y + 0.5) * cs;
+  const lc = lightCells() * (REDUCED ? 1 : 1 + Math.sin(clock * 3) * 0.03);
+  const showAll = state !== "play";       // title / game over show the full layout dimly
+
+  // light glow
+  const g = ctx.createRadialGradient(px, py, 0, px, py, lc * cs);
+  g.addColorStop(0, "rgba(198,255,61,0.16)");
+  g.addColorStop(1, "rgba(198,255,61,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(px - lc * cs, py - lc * cs, lc * cs * 2, lc * cs * 2);
+
+  ctx.lineCap = "square";
+  ctx.lineWidth = Math.max(1.5, cs * 0.1);
+  for (let r = 0; r < m.R; r++) for (let c = 0; c < m.C; c++) {
+    const i = r * m.C + c;
+    const dx = c - p.x, dy = r - p.y;
+    const vis = Math.max(0, 1 - Math.sqrt(dx * dx + dy * dy) / lc);
+    if (vis <= 0 && !m.seen[i] && !showAll) continue;
+    const x = m.ox + c * cs, y = m.oy + r * cs;
+    // breadcrumb on walked cells
+    if (m.walked[i]) { ctx.fillStyle = COL.dark; ctx.fillRect(x + cs / 2 - 1, y + cs / 2 - 1, 2, 2); }
+    if (vis > 0) { ctx.strokeStyle = COL.fg; ctx.globalAlpha = 0.3 + 0.7 * vis; }
+    else { ctx.strokeStyle = COL.dark; ctx.globalAlpha = 1; }
+    const cell = m.cells[i];
+    ctx.beginPath();
+    if (!(cell & 1)) { ctx.moveTo(x, y); ctx.lineTo(x + cs, y); }
+    if (!(cell & 8)) { ctx.moveTo(x, y); ctx.lineTo(x, y + cs); }
+    if (c === m.C - 1 && !(cell & 2)) { ctx.moveTo(x + cs, y); ctx.lineTo(x + cs, y + cs); }
+    if (r === m.R - 1 && !(cell & 4)) { ctx.moveTo(x, y + cs); ctx.lineTo(x + cs, y + cs); }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    // orbs
+    for (const o of m.orbs) {
+      if (o.got || o.c !== c || o.r !== r) continue;
+      if (vis <= 0 && !m.seen[i]) continue;
+      ctx.fillStyle = vis > 0 ? COL.accent : COL.grey;
+      ctx.beginPath(); ctx.arc(x + cs / 2, y + cs / 2, Math.max(2, cs * 0.16), 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  // exit: always marked so you know where to head; lit when in your light
+  const ex = m.ox + m.exit.c * cs, ey = m.oy + m.exit.r * cs;
+  const exVis = m.seen[m.exit.r * m.C + m.exit.c];
+  const blink = REDUCED || Math.floor(clock * 3) % 2 === 0;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = exVis ? COL.accent : (blink ? COL.grey : COL.dark);
+  ctx.strokeRect(ex + cs * 0.2, ey + cs * 0.2, cs * 0.6, cs * 0.6);
+  if (exVis) { ctx.fillStyle = COL.accent; ctx.fillRect(ex + cs * 0.36, ey + cs * 0.36, cs * 0.28, cs * 0.28); }
+
+  // player
+  let bx = 0;
+  if (bump > 0 && !REDUCED) bx = Math.sin(bump * 80) * 2;
+  ctx.fillStyle = COL.accent;
+  ctx.beginPath(); ctx.arc(px + bx, py, Math.max(3, cs * 0.28), 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = COL.accent; ctx.lineWidth = 1; ctx.globalAlpha = 0.4;
+  ctx.beginPath(); ctx.arc(px + bx, py, Math.max(5, cs * 0.42), 0, Math.PI * 2); ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  for (const q of parts) {
+    ctx.globalAlpha = Math.max(0, q.life / 0.5);
+    ctx.fillStyle = COL.accent;
+    ctx.fillRect(q.x - 1.5, q.y - 1.5, 3, 3);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawHUD() {
+  if (state === "title") return;
+  text("[ SCORE ]", 12, 9, 8, COL.grey, "left");
+  text(pad(score, 5), 12, 21, 13, COL.accent, "left", true);
+  text("[ LEVEL ]", VIEW_W / 2, 9, 8, COL.grey);
+  text(String(level), VIEW_W / 2, 21, 13, COL.fg, "center", true);
+  text("[ TIME ]", VIEW_W - 12, 9, 8, COL.grey, "right");
+  const low = timeLeft < 10 && state === "play";
+  const tc = low && (REDUCED || Math.floor(clock * 4) % 2 === 0) ? COL.accent : COL.fg;
+  text(Math.ceil(Math.max(0, timeLeft)).toString(), VIEW_W - 12, 21, 13, tc, "right", true);
+  ctx.fillStyle = COL.dark; ctx.fillRect(110, 20, 110, 2); ctx.fillRect(260, 20, 110, 2);
+  ctx.fillStyle = COL.accent;
+  const f = Math.max(0, timeLeft / RUN_TIME);
+  ctx.fillRect(260, 20, 110 * f, 2);
+  ctx.fillRect(220 - 110 * f, 20, 110 * f, 2);
+}
+
+function overlay(a) { ctx.fillStyle = "rgba(0,0,0," + a + ")"; ctx.fillRect(0, 0, VIEW_W, VIEW_H); }
+function blinkOn() { return REDUCED || Math.floor(clock * 2.2) % 2 === 0; }
+
+function drawTitle() {
+  overlay(0.8);
+  text("LUMEN MAZE", VIEW_W / 2, 56, 34, COL.fg, "center", true);
+  ctx.fillStyle = COL.accent;
+  ctx.fillRect(VIEW_W / 2 - 104, 80, 208, 3);
+  text("[ A NEW MAZE EVERY RUN ]", VIEW_W / 2, 96, 10, COL.grey);
+  text("FIND THE EXIT SQUARE - YOUR LIGHT SHOWS THE WAY", VIEW_W / 2, 122, 10, COL.fg);
+  text("MOVE ..... ARROWS / WASD / SWIPE / TAP A SIDE", VIEW_W / 2, 138, 10, COL.fg);
+  text("ONE PRESS GLIDES TO THE NEXT TURN", VIEW_W / 2, 156, 10, COL.grey);
+  text("ORBS +50 & +2 SEC  -  FAST EXITS SCORE MORE", VIEW_W / 2, 172, 10, COL.grey);
+  text("75 SECONDS - EACH MAZE IS BIGGER", VIEW_W / 2, 188, 10, COL.grey);
+  if (blinkOn()) text("PRESS SPACE / TAP TO START", VIEW_W / 2, 226, 14, COL.accent, "center", true);
+}
+
+function drawOver() {
+  overlay(0.8);
+  text("LIGHTS OUT", VIEW_W / 2, 62, 32, COL.fg, "center", true);
+  text("[ SCORE ]", VIEW_W / 2, 100, 10, COL.grey);
+  text(pad(score, 5), VIEW_W / 2, 126, 30, COL.accent, "center", true);
+  text("[ MAZES ] " + cleared + "   [ ORBS ] " + orbsGot + "   [ BEST ] " + pad(best, 5), VIEW_W / 2, 160, 10, COL.fg);
+  if (overT > 0.6 && blinkOn()) text("SPACE / R / TAP TO RESTART", VIEW_W / 2, 214, 14, COL.accent, "center", true);
+}
+
+function drawPaused() {
+  overlay(0.8);
+  text("PAUSED", VIEW_W / 2, VIEW_H / 2 - 14, 28, COL.fg, "center", true);
+  text("PRESS SPACE / TAP TO RESUME", VIEW_W / 2, VIEW_H / 2 + 20, 11, COL.accent);
+}
+
+// ------------------------------------------------------------ INPUT
+const KEYDIR = { ArrowUp: 0, w: 0, W: 0, ArrowRight: 1, d: 1, D: 1, ArrowDown: 2, s: 2, S: 2, ArrowLeft: 3, a: 3, A: 3 };
+
+window.addEventListener("keydown", e => {
+  const k = e.key;
+  if (k === " " || k.indexOf("Arrow") === 0) e.preventDefault();
+  const d = KEYDIR[k];
+  if (d !== undefined) {
+    const at = held.indexOf(d);
+    if (at >= 0) held.splice(at, 1);
+    held.push(d);
+    if (!e.repeat) request(d);
+    return;
+  }
+  if (e.repeat) return;
+  const isAction = k === " " || k === "Enter";
+  if (paused) { if (isAction) paused = false; return; }
+  if (state === "title" && isAction) startGame();
+  else if (state === "over" && (isAction || k === "r" || k === "R") && overT > 0.6) startGame();
+  else if (state === "play" && (k === "p" || k === "P" || k === "Escape")) paused = true;
+});
+window.addEventListener("keyup", e => {
+  const d = KEYDIR[e.key];
+  if (d === undefined) return;
+  const at = held.indexOf(d);
+  if (at >= 0) held.splice(at, 1);
+});
+window.addEventListener("blur", () => { held.length = 0; });
+
+// Touch: swipe in a direction, or tap on a side of your light.
+let swipe = null;
+canvas.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  try { canvas.focus({ preventScroll: true }); } catch (err) { /* ignore */ }
+  if (paused) { paused = false; return; }
+  if (state === "title") { startGame(); return; }
+  if (state === "over") { if (overT > 0.6) startGame(); return; }
+  const p = toLogical(e);
+  swipe = { id: e.pointerId, x: p.x, y: p.y, used: false };
+  try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+});
+window.addEventListener("pointermove", e => {
+  if (!swipe || e.pointerId !== swipe.id) return;
+  const p = toLogical(e);
+  const dx = p.x - swipe.x, dy = p.y - swipe.y;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) > 22) {
+    request(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
+    swipe.x = p.x; swipe.y = p.y; swipe.used = true;   // re-anchor: chain swipes without lifting
+  }
+});
+function endSwipe(e) {
+  if (!swipe || e.pointerId !== swipe.id) return;
+  const s = swipe;
+  swipe = null;
+  if (s.used || e.type === "pointercancel" || state !== "play") return;
+  // a tap: move toward the tapped side of the player
+  const m = maze, p = toLogical(e);
+  const dx = p.x - (m.ox + (player.x + 0.5) * m.cs), dy = p.y - (m.oy + (player.y + 0.5) * m.cs);
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < m.cs * 0.5) return;
+  request(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
+}
+window.addEventListener("pointerup", endSwipe);
+window.addEventListener("pointercancel", endSwipe);
+canvas.addEventListener("contextmenu", e => e.preventDefault());
+
+// ------------------------------------------------------------ MAIN LOOP
+let last = 0;
+function frame(ts) {
+  const now = ts / 1000;
+  let dt = last ? now - last : 0;
+  last = now;
+  if (dt > 0.05) dt = 0.05;
+  if (dt < 0) dt = 0;
+  clock += dt;
+  if (!paused) update(dt);
+  draw();
+  requestAnimationFrame(frame);
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && state === "play") { paused = true; held.length = 0; }
+  last = 0;
+});
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
