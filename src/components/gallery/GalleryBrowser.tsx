@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 
 import { Reveal } from "@/components/motion";
 import { Chip } from "@/components/ui";
@@ -21,6 +21,23 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
   const [tag, setTag] = useState<string | null>(null);
   const [games, setGames] = useState(initialGames);
   const [tags, setTags] = useState(initialTags);
+  const baseId = useId();
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // WAI-ARIA tabs: arrow keys, Home and End move between tabs and activate them.
+  const onTabKey = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const count = gallery.tabs.length;
+    const next =
+      event.key === "ArrowRight" ? (index + 1) % count
+      : event.key === "ArrowLeft" ? (index - 1 + count) % count
+      : event.key === "Home" ? 0
+      : event.key === "End" ? count - 1
+      : null;
+    if (next === null) return;
+    event.preventDefault();
+    setTab(gallery.tabs[next]!.id);
+    tabRefs.current[next]?.focus();
+  };
 
   useEffect(() => {
     let alive = true;
@@ -39,11 +56,18 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-6 border-b border-line pb-6">
         <div role="tablist" aria-label="Gallery tabs" className="flex flex-wrap gap-x-8 gap-y-3">
-          {gallery.tabs.map((t) => (
+          {gallery.tabs.map((t, i) => (
             <button
               key={t.id}
+              ref={(el) => {
+                tabRefs.current[i] = el;
+              }}
+              id={`${baseId}-tab-${t.id}`}
               role="tab"
               aria-selected={tab === t.id}
+              aria-controls={`${baseId}-panel`}
+              tabIndex={tab === t.id ? 0 : -1}
+              onKeyDown={(e) => onTabKey(e, i)}
               onClick={() => setTab(t.id)}
               className={cn(
                 "type-nav border-b-2 pb-2 transition-colors duration-[400ms] ease-snap",
@@ -67,7 +91,7 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
         </div>
       </div>
 
-      <div role="tabpanel">
+      <div role="tabpanel" id={`${baseId}-panel`} aria-labelledby={`${baseId}-tab-${tab}`} tabIndex={0} className="focus-visible:outline-offset-8">
         {games.length === 0 ? (
           <p className="type-body text-fog">{gallery.empty}</p>
         ) : (
