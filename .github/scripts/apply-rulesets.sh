@@ -8,7 +8,8 @@ REPO="${1:-$(gh repo view --json nameWithOwner --jq .nameWithOwner)}"
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../rulesets" && pwd)"
 
 for file in "$DIR"/*.json; do
-  name=$(jq -r .name "$file")
+  # Read the name with Node (always present here) instead of jq, which many machines lack.
+  name=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(0, "utf8")).name)' <"$file")
   id=$(gh api "repos/$REPO/rulesets" --jq ".[] | select(.name == \"$name\") | .id")
   if [[ -n "$id" ]]; then
     gh api --method PUT "repos/$REPO/rulesets/$id" --input "$file" --jq '"updated \(.name) (#\(.id))"'

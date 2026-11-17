@@ -16,6 +16,7 @@
     "test": "node --test \"src/**/*.test.ts\"",
     "check:images": "node scripts/check-images.mjs",
     "images": "node scripts/build-images.mjs",
+    "media:fetch": "node scripts/fetch-media.mjs",
     "verify:export": "node scripts/verify-export.mjs"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "eslint": "^10.15.0",
     "eslint-config-next": "^16.4.6",
     "postcss": "^8.5.33",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.3.5",
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   }
