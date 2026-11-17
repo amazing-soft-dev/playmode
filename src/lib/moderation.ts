@@ -64,3 +64,17 @@ export function moderatePrompt(raw: string): ModerationResult {
   }
   return { ok: true, prompt, replacements };
 }
+
+/**
+ * Moderation for gallery titles, descriptions and tags at publish time (plan section 11).
+ * Franchise names are refused here rather than swapped, because the creator is naming the game.
+ */
+export function moderateText(text: string): { ok: true } | { ok: false; message: string } {
+  if (BLOCKLIST.some((re) => re.test(text))) {
+    return { ok: false, message: "Please remove words that aren't suitable for players aged 8 and up." };
+  }
+  if (FRANCHISES.some(([re]) => new RegExp(re.source, "i").test(text))) {
+    return { ok: false, message: "Please don't use trademarked game or character names. Give your game an original name." };
+  }
+  return { ok: true };
+}

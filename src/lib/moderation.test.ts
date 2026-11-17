@@ -26,3 +26,10 @@ test("blocked, empty and overlong prompts are refused without a build", () => {
   // Words that merely contain a blocked term are fine.
   assert.equal(moderatePrompt("a sussex countryside farming game").ok, true);
 });
+
+test("publish text refuses franchise names and blocked words", async () => {
+  const { moderateText } = await import("./moderation.ts");
+  assert.deepEqual(moderateText("Comet Skipper"), { ok: true });
+  assert.equal(moderateText("Super Mario Runner").ok, false);
+  assert.equal(moderateText("nsfw stuff").ok, false);
+});
