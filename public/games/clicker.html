@@ -1,0 +1,383 @@
+<!-- playermode:game id=clicker scoreMin=0 scoreMax=1000000 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>BYTE TAPPER</title>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}
+body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+canvas{display:block;touch-action:none;outline:none}
+</style>
+</head>
+<body>
+<canvas id="game" tabindex="0" aria-label="BYTE TAPPER - timed clicker game"></canvas>
+<script>
+window.addEventListener("error", e => parent.postMessage({ type: "error", message: String(e.message).slice(0, 300) }, "*"));
+/* =====================================================================
+   PLAYERMODE STARTER TEMPLATE  -  BYTE TAPPER  (timed clicker)
+   ---------------------------------------------------------------------
+   Tap the core to mine bytes, spend them on upgrades, beat the clock.
+   Score = total bytes mined during the 45 second run (spending does not
+   lower it), so buying upgrades early is a real strategy choice.
+   LOOP     requestAnimationFrame(frame) -> update(dt) -> draw()
+            dt in seconds, clamped to 50 ms; update() skipped while paused.
+   STATES   "title" -> "play" -> "over" -> (Space / R / tap) -> "play"
+   LOGICAL  480 x 270, letterboxed and devicePixelRatio aware.
+   CUSTOMIZE
+     CONFIG ........ run length, heat tuning
+     UPGRADES ...... names, prices, growth; effects in tapValue()/botRate()
+     drawCore() .... the big tappable object (vector art)
+     reportScore() . sends the final score once per run
+   RULES    single file, no network, no storage, system fonts only.
+   ===================================================================== */
+(function () {
+"use strict";
+
+// ------------------------------------------------------------ CONFIG
+const VIEW_W = 480, VIEW_H = 270;
+const SCORE_MIN = 0, SCORE_MAX = 1000000;
+const COL = { bg: "#000", fg: "#fff", grey: "#7b7878", dark: "#333", accent: "#C6FF3D" };
+const FONT = "ui-monospace, monospace";
+const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+const RUN_TIME = 45;
+const HEAT_PER_TAP = 0.07, HEAT_DECAY = 0.5;    // heat 0..1 gives up to x2 on taps
+const CORE = { x: 145, y: 152, r: 46 };
+const UPGRADES = [
+  { key: "1", name: "TAP POWER",  desc: "+1 BYTE PER TAP", base: 10,  growth: 1.55 },
+  { key: "2", name: "AUTO BOT",   desc: "+3 BYTES / SEC",  base: 25,  growth: 1.6 },
+  { key: "3", name: "TURBO CORE", desc: "+50% ALL GAINS",  base: 150, growth: 2.1 }
+];
+const BTN = { x: 288, w: 178, h: 54, y0: 62, gap: 62 };
+
+// ------------------------------------------------------------ CANVAS + LETTERBOX
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const view = { scale: 1, ox: 0, oy: 0, dpr: 1 };
+
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const w = window.innerWidth || VIEW_W, h = window.innerHeight || VIEW_H;
+  canvas.width = Math.max(1, Math.round(w * dpr));
+  canvas.height = Math.max(1, Math.round(h * dpr));
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
+  view.dpr = dpr;
+  view.scale = Math.min(w / VIEW_W, h / VIEW_H);
+  view.ox = (w - VIEW_W * view.scale) / 2;
+  view.oy = (h - VIEW_H * view.scale) / 2;
+}
+window.addEventListener("resize", resize);
+resize();
+function toLogical(e) { return { x: (e.clientX - view.ox) / view.scale, y: (e.clientY - view.oy) / view.scale }; }
+
+function beginFrame() {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = COL.bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const k = view.scale * view.dpr;
+  ctx.setTransform(k, 0, 0, k, view.ox * view.dpr, view.oy * view.dpr);
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, VIEW_W, VIEW_H);
+  ctx.clip();
+}
+function endFrame() { ctx.restore(); }
+
+function text(str, x, y, size, color, align, bold) {
+  ctx.font = (bold ? "bold " : "") + size + "px " + FONT;
+  ctx.fillStyle = color;
+  ctx.textAlign = align || "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(str, x, y);
+}
+function pad(n, len) { return String(Math.max(0, Math.floor(n))).padStart(len, "0"); }
+function fmt(n) {
+  n = Math.floor(n);
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+  if (n >= 1e4) return (n / 1e3).toFixed(1) + "K";
+  return String(n);
+}
+
+// ------------------------------------------------------------ SCORE REPORTING
+let reported = false;
+function reportScore(v) {
+  if (reported) return;
+  reported = true;
+  const value = Math.max(SCORE_MIN, Math.min(SCORE_MAX, Math.floor(v) || 0));
+  parent.postMessage({ type: "score", value: value }, "*");
+}
+
+// ------------------------------------------------------------ STATE
+let state = "title";   // "title" | "play" | "over"
+let paused = false, overT = 0, best = 0, clock = 0;
+let bytes, mined, lv, heat, timeLeft, taps, pulse, parts, popups, btnFx, flash;
+
+function reset() {
+  bytes = 0; mined = 0; lv = [0, 0, 0]; heat = 0; timeLeft = RUN_TIME; taps = 0; pulse = 0;
+  parts = []; popups = []; btnFx = [0, 0, 0]; flash = 0;
+  reported = false;
+}
+reset();
+
+function startGame() { reset(); state = "play"; paused = false; }
+
+function endGame() {
+  state = "over"; overT = 0; timeLeft = 0;
+  if (mined > best) best = Math.floor(mined);
+  flash = REDUCED ? 0 : 0.8;
+  reportScore(mined);
+}
+
+// ------------------------------------------------------------ ECONOMY
+function gainMult() { return 1 + 0.5 * lv[2]; }
+function tapValue() { return (1 + lv[0]) * gainMult() * (1 + heat); }
+function botRate() { return 3 * lv[1] * gainMult(); }
+function cost(i) { return Math.floor(UPGRADES[i].base * Math.pow(UPGRADES[i].growth, lv[i])); }
+function earn(v) { bytes += v; mined += v; }
+
+function tap() {
+  const v = tapValue();
+  earn(v);
+  taps++;
+  heat = Math.min(1, heat + HEAT_PER_TAP);
+  pulse = 1;
+  popups.push({ x: CORE.x + (Math.random() - 0.5) * 80, y: CORE.y - CORE.r - 6 - Math.random() * 10, txt: "+" + (v < 10 ? v.toFixed(1) : fmt(v)), life: 0.8 });
+  const n = REDUCED ? 1 : 3;
+  for (let i = 0; i < n; i++) {
+    const b = Math.random() * Math.PI * 2, s = 60 + Math.random() * 120;
+    parts.push({ x: CORE.x, y: CORE.y, vx: Math.cos(b) * s, vy: Math.sin(b) * s, life: 0.6, ch: Math.random() < 0.5 ? "0" : "1" });
+  }
+}
+
+function buy(i) {
+  const c = cost(i);
+  if (bytes >= c) {
+    bytes -= c;
+    lv[i]++;
+    btnFx[i] = 0.35;
+    popups.push({ x: BTN.x + BTN.w / 2, y: BTN.y0 + i * BTN.gap + 8, txt: UPGRADES[i].name + " LV " + lv[i], life: 0.9 });
+  } else {
+    btnFx[i] = -0.35;   // negative = "can't afford" wiggle
+  }
+}
+
+// ------------------------------------------------------------ UPDATE
+function update(dt) {
+  overT += dt;
+  flash = Math.max(0, flash - 2 * dt);
+  pulse = Math.max(0, pulse - 6 * dt);
+  for (let i = 0; i < 3; i++) {
+    if (btnFx[i] > 0) btnFx[i] = Math.max(0, btnFx[i] - dt);
+    else if (btnFx[i] < 0) btnFx[i] = Math.min(0, btnFx[i] + dt);
+  }
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const q = parts[i];
+    q.life -= dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 200 * dt;
+    if (q.life <= 0) parts.splice(i, 1);
+  }
+  for (let i = popups.length - 1; i >= 0; i--) {
+    popups[i].life -= dt; popups[i].y -= 34 * dt;
+    if (popups[i].life <= 0) popups.splice(i, 1);
+  }
+  if (state !== "play") return;
+
+  heat = Math.max(0, heat - HEAT_DECAY * dt);
+  earn(botRate() * dt);
+  timeLeft -= dt;
+  if (timeLeft <= 0) endGame();
+}
+
+// ------------------------------------------------------------ DRAW
+function draw() {
+  beginFrame();
+  drawCore();
+  drawPanel();
+  drawHUD();
+  for (const q of parts) {
+    ctx.globalAlpha = Math.max(0, q.life / 0.6);
+    text(q.ch, q.x, q.y, 9, COL.accent, "center", true);
+  }
+  ctx.globalAlpha = 1;
+  for (const q of popups) {
+    ctx.globalAlpha = Math.min(1, q.life * 2);
+    text(q.txt, q.x, q.y, 11, COL.accent, "center", true);
+  }
+  ctx.globalAlpha = 1;
+  if (state === "title") drawTitle();
+  else if (state === "over") drawOver();
+  if (paused) drawPaused();
+  if (flash > 0) {
+    ctx.fillStyle = "rgba(198,255,61," + (flash * 0.18).toFixed(3) + ")";
+    ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+  }
+  endFrame();
+}
+
+function hexPath(x, y, r, rot) {
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const a = rot + i / 6 * Math.PI * 2;
+    if (i === 0) ctx.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r);
+    else ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r);
+  }
+  ctx.closePath();
+}
+
+function drawCore() {
+  const r = CORE.r * (1 + pulse * (REDUCED ? 0.02 : 0.08));
+  // heat ring
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = COL.dark;
+  ctx.beginPath(); ctx.arc(CORE.x, CORE.y, CORE.r + 14, 0, Math.PI * 2); ctx.stroke();
+  if (heat > 0.001) {
+    ctx.strokeStyle = COL.accent;
+    ctx.beginPath(); ctx.arc(CORE.x, CORE.y, CORE.r + 14, -Math.PI / 2, -Math.PI / 2 + heat * Math.PI * 2); ctx.stroke();
+  }
+  // bots orbiting
+  const nb = Math.min(lv[1], 12);
+  for (let i = 0; i < nb; i++) {
+    const a = clock * (REDUCED ? 0.3 : 1.2) + i / nb * Math.PI * 2;
+    ctx.fillStyle = COL.fg;
+    ctx.fillRect(CORE.x + Math.cos(a) * (CORE.r + 26) - 3, CORE.y + Math.sin(a) * (CORE.r + 26) - 3, 6, 6);
+  }
+  // body
+  hexPath(CORE.x, CORE.y, r, Math.PI / 6);
+  ctx.fillStyle = COL.dark; ctx.fill();
+  ctx.lineWidth = 3; ctx.strokeStyle = COL.accent; ctx.stroke();
+  hexPath(CORE.x, CORE.y, r * 0.72, Math.PI / 6);
+  ctx.lineWidth = 1; ctx.strokeStyle = COL.grey; ctx.stroke();
+  // the current low byte of your total, as 8 bits
+  const b = Math.floor(mined) & 255;
+  text("BYTE", CORE.x, CORE.y - 14, 9, COL.grey);
+  for (let i = 0; i < 8; i++) {
+    const on = (b >> (7 - i)) & 1;
+    ctx.fillStyle = on ? COL.accent : COL.bg;
+    ctx.fillRect(CORE.x - 32 + i * 8, CORE.y - 3, 6, 8);
+  }
+  text(state === "play" ? "TAP!" : "", CORE.x, CORE.y + 18, 10, COL.fg, "center", true);
+  // stats under the core
+  text("HEAT x" + (1 + heat).toFixed(1), CORE.x, CORE.y + 80, 10, heat > 0.5 ? COL.accent : COL.grey, "center", true);
+  text("+" + tapValue().toFixed(1) + " / TAP   +" + botRate().toFixed(1) + " / SEC", CORE.x, CORE.y + 96, 9, COL.grey);
+}
+
+function drawPanel() {
+  for (let i = 0; i < UPGRADES.length; i++) {
+    const u = UPGRADES[i], c = cost(i);
+    const afford = bytes >= c && state === "play";
+    let x = BTN.x;
+    const y = BTN.y0 + i * BTN.gap;
+    if (btnFx[i] < 0 && !REDUCED) x += Math.sin(btnFx[i] * 60) * 3;
+    ctx.fillStyle = btnFx[i] > 0 ? "rgba(198,255,61,0.18)" : COL.bg;
+    ctx.fillRect(x, y, BTN.w, BTN.h);
+    ctx.lineWidth = afford ? 2 : 1;
+    ctx.strokeStyle = afford ? COL.accent : COL.dark;
+    ctx.strokeRect(x + 0.5, y + 0.5, BTN.w - 1, BTN.h - 1);
+    text("[" + u.key + "] " + u.name, x + 10, y + 14, 11, COL.fg, "left", true);
+    text("LV " + lv[i], x + BTN.w - 10, y + 14, 10, COL.grey, "right");
+    text(u.desc, x + 10, y + 29, 9, COL.grey, "left");
+    text("COST " + fmt(c), x + 10, y + 43, 10, afford ? COL.accent : COL.grey, "left", true);
+  }
+}
+
+function drawHUD() {
+  text("[ MINED ]", 14, 14, 9, COL.grey, "left");
+  text(pad(mined, 6), 14, 33, 20, COL.accent, "left", true);
+  text("[ WALLET ]", 180, 14, 9, COL.grey, "left");
+  text(fmt(bytes), 180, 33, 14, COL.fg, "left", true);
+  text("[ TIME ]", VIEW_W - 14, 14, 9, COL.grey, "right");
+  const low = timeLeft < 10 && state === "play";
+  const tc = low && (REDUCED || Math.floor(clock * 4) % 2 === 0) ? COL.accent : COL.fg;
+  text(Math.ceil(Math.max(0, timeLeft)).toString(), VIEW_W - 14, 33, 20, tc, "right", true);
+  ctx.fillStyle = COL.dark; ctx.fillRect(14, 48, VIEW_W - 28, 2);
+  ctx.fillStyle = COL.accent; ctx.fillRect(14, 48, (VIEW_W - 28) * Math.max(0, timeLeft / RUN_TIME), 2);
+  text("TAP CORE / SPACE  -  BUY: TAP BUTTON / 1 2 3", VIEW_W / 2, VIEW_H - 9, 9, COL.grey);
+}
+
+function overlay(a) { ctx.fillStyle = "rgba(0,0,0," + a + ")"; ctx.fillRect(0, 0, VIEW_W, VIEW_H); }
+function blinkOn() { return REDUCED || Math.floor(clock * 2.2) % 2 === 0; }
+
+function drawTitle() {
+  overlay(0.82);
+  text("BYTE TAPPER", VIEW_W / 2, 58, 34, COL.fg, "center", true);
+  ctx.fillStyle = COL.accent;
+  ctx.fillRect(VIEW_W / 2 - 112, 82, 224, 3);
+  text("[ MINE. UPGRADE. REPEAT. ]", VIEW_W / 2, 98, 10, COL.grey);
+  text("TAP THE CORE (OR PRESS SPACE) TO MINE BYTES", VIEW_W / 2, 126, 10, COL.fg);
+  text("SPEND BYTES ON UPGRADES: TAP THEM OR PRESS 1 2 3", VIEW_W / 2, 142, 10, COL.fg);
+  text("TAP FAST TO HEAT UP THE CORE - UP TO x2", VIEW_W / 2, 162, 10, COL.grey);
+  text("45 SECONDS - SCORE = TOTAL BYTES MINED", VIEW_W / 2, 178, 10, COL.grey);
+  if (blinkOn()) text("PRESS SPACE / TAP TO START", VIEW_W / 2, 220, 14, COL.accent, "center", true);
+}
+
+function drawOver() {
+  overlay(0.85);
+  text("TIME UP", VIEW_W / 2, 58, 32, COL.fg, "center", true);
+  text("[ BYTES MINED ]", VIEW_W / 2, 96, 10, COL.grey);
+  text(pad(mined, 6), VIEW_W / 2, 122, 30, COL.accent, "center", true);
+  text("[ BEST ] " + pad(best, 6) + "   [ TAPS ] " + taps, VIEW_W / 2, 156, 10, COL.fg);
+  text("[ UPGRADES ] TAP " + lv[0] + "  BOT " + lv[1] + "  TURBO " + lv[2], VIEW_W / 2, 174, 10, COL.grey);
+  if (overT > 1 && blinkOn()) text("SPACE / R / TAP TO RESTART", VIEW_W / 2, 220, 14, COL.accent, "center", true);
+}
+
+function drawPaused() {
+  overlay(0.8);
+  text("PAUSED", VIEW_W / 2, VIEW_H / 2 - 14, 28, COL.fg, "center", true);
+  text("PRESS SPACE / TAP TO RESUME", VIEW_W / 2, VIEW_H / 2 + 20, 11, COL.accent);
+}
+
+// ------------------------------------------------------------ INPUT
+// Restart is locked for 1 s after the run ends so frantic tapping
+// does not skip the results screen.
+window.addEventListener("keydown", e => {
+  const k = e.key;
+  if (k === " " || k.indexOf("Arrow") === 0) e.preventDefault();
+  if (e.repeat) return;            // holding a key never auto-taps
+  const isAction = k === " " || k === "Enter";
+  if (paused) { if (isAction) paused = false; return; }
+  if (state === "title") { if (isAction) startGame(); return; }
+  if (state === "over") { if ((isAction || k === "r" || k === "R") && overT > 1) startGame(); return; }
+  if (k === "p" || k === "P" || k === "Escape") { paused = true; return; }
+  if (isAction) tap();
+  else if (k === "1" || k === "2" || k === "3") buy(Number(k) - 1);
+});
+
+canvas.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  try { canvas.focus({ preventScroll: true }); } catch (err) { /* ignore */ }
+  if (paused) { paused = false; return; }
+  if (state === "title") { startGame(); return; }
+  if (state === "over") { if (overT > 1) startGame(); return; }
+  const p = toLogical(e);
+  for (let i = 0; i < UPGRADES.length; i++) {
+    const y = BTN.y0 + i * BTN.gap;
+    if (p.x >= BTN.x && p.x <= BTN.x + BTN.w && p.y >= y && p.y <= y + BTN.h) { buy(i); return; }
+  }
+  if (p.x < BTN.x - 4) tap();
+});
+canvas.addEventListener("contextmenu", e => e.preventDefault());
+
+// ------------------------------------------------------------ MAIN LOOP
+let last = 0;
+function frame(ts) {
+  const now = ts / 1000;
+  let dt = last ? now - last : 0;
+  last = now;
+  if (dt > 0.05) dt = 0.05;
+  if (dt < 0) dt = 0;
+  clock += dt;
+  if (!paused) update(dt);
+  draw();
+  requestAnimationFrame(frame);
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && state === "play") paused = true;
+  last = 0;
+});
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
