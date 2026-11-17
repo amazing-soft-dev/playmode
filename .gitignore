@@ -63,3 +63,6 @@ next-env.d.ts
 /usage.json
 /build-activity.log
 /.craft-anything.tmp-*
+
+# local Claude Code settings and preview launch config
+/.claude/
