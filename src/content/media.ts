@@ -33,6 +33,12 @@ export const photos = {
   bannerLogin: "banner-login",
   notFound: "not-found",
   bannerAccount: "banner-account",
+  // Page body images
+  parentsTogether: "parents-together",
+  newsTemplates: "news-templates",
+  newsDaily: "news-daily",
+  newsSafety: "news-safety",
+  newsGallery: "news-gallery",
 } as const;
 
 export type PhotoSlot = keyof typeof photos;
