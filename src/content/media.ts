@@ -42,3 +42,12 @@ export const photos = {
 } as const;
 
 export type PhotoSlot = keyof typeof photos;
+
+/** Background video loops from Pexels; posters are found with posterFor(id). */
+export const videos = {
+  hero: "video-hero",
+  gameplay: "video-gameplay",
+  footer: "video-footer",
+} as const;
+
+export type VideoSlot = keyof typeof videos;
