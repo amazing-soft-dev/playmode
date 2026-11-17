@@ -1,5 +1,7 @@
+import { AboutSection } from "@/components/home/AboutSection";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HowItWorks } from "@/components/home/HowItWorks";
+import { StatsSection } from "@/components/home/StatsSection";
 
 /** Home page sections in the template's order, with PlayerMode content. */
 export default function HomePage() {
@@ -7,6 +9,8 @@ export default function HomePage() {
     <>
       <HomeHero />
       <HowItWorks />
+      <AboutSection />
+      <StatsSection />
     </>
   );
 }
