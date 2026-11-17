@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+import { COMMON_HEADERS, SITE_CSP, gameCsp } from "./src/lib/security-headers";
+
 /**
  * Two build targets share this config:
  * - server (default `next build`): what Vercel runs. Route handlers and the image optimizer work.
@@ -37,7 +39,19 @@ const nextConfig: NextConfig = {
         output: "export" as const,
         trailingSlash: true,
       }
-    : {}),
+    : {
+        // Headers only apply to the server build; a static host needs its own configuration.
+        async headers() {
+          const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+          return [
+            { source: "/:path*", headers: [...COMMON_HEADERS, { key: "Content-Security-Policy", value: SITE_CSP }] },
+            {
+              source: "/games/:path*",
+              headers: [...COMMON_HEADERS, { key: "Content-Security-Policy", value: gameCsp(origin) }, { key: "X-Frame-Options", value: "SAMEORIGIN" }],
+            },
+          ];
+        },
+      }),
 };
 
 export default nextConfig;
