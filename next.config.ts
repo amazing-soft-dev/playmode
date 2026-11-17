@@ -13,6 +13,17 @@ const nextConfig: NextConfig = {
     turbopackRustReactCompiler: true,
   },
   poweredByHeader: false,
+  images: isStaticExport
+    ? {
+        // No optimizer in a static export: serve the WebP variants made by `npm run images`.
+        loader: "custom",
+        loaderFile: "./src/lib/image-loader.ts",
+      }
+    : {
+        formats: ["image/avif", "image/webp"],
+        deviceSizes: [640, 750, 960, 1280, 1600, 1920, 2400],
+        minimumCacheTTL: 60 * 60 * 24 * 30,
+      },
   ...(isStaticExport
     ? {
         output: "export" as const,
