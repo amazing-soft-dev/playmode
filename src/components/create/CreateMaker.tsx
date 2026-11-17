@@ -172,7 +172,7 @@ export function CreateMaker({ onBuilt }: { onBuilt?: (game: BuiltGame) => void }
             {limitReached && (
               <p className="type-small text-fog">
                 {create.limitReached}{" "}
-                <Link href="/pricing" className="text-accent underline-offset-4 hover:underline">
+                <Link href="/pricing?reason=limit" className="text-accent underline-offset-4 hover:underline">
                   See plans
                 </Link>
               </p>
