@@ -42,37 +42,34 @@
   --container-site: 1330px;
   --container-prose: 720px;
 
-  /* Radii: the template keeps media and cards almost square */
+  /* Radii: the template UI is square (docs/audit/report.md); pills only for chips */
   --radius-none: 0;
-  --radius-sm: 4px;
-  --radius-card: 10px;
-  --radius-tile: 11px;
+  --radius-sm: 2px;
   --radius-pill: 999px;
 
-  /* Motion */
-  --ease-snap: cubic-bezier(0.6, 0, 0.2, 1); /* button arrow swap */
-  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1); /* reveals */
-  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1); /* menus */
+  /* Motion: the template uses one curve for every hover, reveal and menu */
+  --ease-snap: cubic-bezier(0.44, 0, 0.56, 1);
+  --ease-count: cubic-bezier(0.4, 0, 0.2, 1); /* count-up numbers */
 }
 
-/* Spacing that changes per breakpoint */
+/* Spacing that changes per breakpoint: gutter and sections step down at 1279.98px */
 :root {
   --gutter: 15px;
   --section: 130px;
   --header-h: 72px;
+  --dur-hover: 400ms;
+}
+
+@media (max-width: 1279.98px) {
+  :root {
+    --gutter: 20px;
+    --section: 80px;
+  }
 }
 
 @media (max-width: 991.98px) {
   :root {
-    --gutter: 20px;
-    --section: 100px;
     --header-h: 64px;
-  }
-}
-
-@media (max-width: 767.98px) {
-  :root {
-    --section: 80px;
   }
 }
 

@@ -8,7 +8,8 @@ import { ArrowIcon } from "./icons";
 /**
  * Buttons in the Playmode style.
  * - primary: the template's framed button (top/bottom rules, corner ticks, an arrow cell). The
- *   arrow cell is lime; on hover the frame turns lime and the arrow slides through.
+ *   arrow cell is lime; on hover the frame turns lime, the corner ticks grow to half height and
+ *   the arrow slides 20px (400ms, the template's single easing curve).
  * - secondary: the same frame in white; hover turns text and arrow lime.
  * - solid: a lime block, for the single most important action on a screen.
  * - link: inline text action with a lime underline on hover.
@@ -32,10 +33,7 @@ export type ButtonProps = AsLink | AsButton;
 
 function framed(variant: ButtonVariant, block: boolean, className?: string) {
   return cn(
-    "group/btn relative inline-flex h-12 shrink-0 items-stretch border-y text-paper transition-colors duration-300",
-    // Corner ticks: 6px vertical strokes at each end of the left and right edges.
-    "before:absolute before:-inset-y-px before:left-0 before:w-px before:bg-[linear-gradient(currentColor_0_6px,transparent_6px_calc(100%-6px),currentColor_calc(100%-6px))]",
-    "after:absolute after:-inset-y-px after:right-0 after:w-px after:bg-[linear-gradient(currentColor_0_6px,transparent_6px_calc(100%-6px),currentColor_calc(100%-6px))]",
+    "group/btn relative inline-flex h-12 shrink-0 items-stretch border-y text-paper transition-colors duration-[400ms] ease-snap",
     "border-paper hover:border-accent hover:text-accent focus-visible:border-accent focus-visible:text-accent",
     "disabled:pointer-events-none disabled:opacity-40 aria-disabled:pointer-events-none aria-disabled:opacity-40",
     variant === "primary" && "border-paper",
@@ -46,8 +44,15 @@ function framed(variant: ButtonVariant, block: boolean, className?: string) {
 
 function Inner({ variant, arrow, block, children }: Required<Pick<BaseProps, "variant" | "arrow" | "block">> & { children: ReactNode }) {
   if (variant === "solid" || variant === "link") return <>{children}</>;
+  // Corner ticks on the left and right edges: 8px at rest, growing to half the height on hover.
+  const tick =
+    "pointer-events-none absolute w-px bg-current h-2 transition-[height] duration-[400ms] ease-snap group-hover/btn:h-1/2 group-focus-visible/btn:h-1/2";
   return (
     <>
+      <span aria-hidden className={cn(tick, "-top-px left-0")} />
+      <span aria-hidden className={cn(tick, "-bottom-px left-0")} />
+      <span aria-hidden className={cn(tick, "-top-px right-0")} />
+      <span aria-hidden className={cn(tick, "right-0 -bottom-px")} />
       <span
         className={cn(
           "type-body flex min-w-48 items-center px-5 tracking-[0.03em] whitespace-nowrap",
@@ -65,8 +70,7 @@ function Inner({ variant, arrow, block, children }: Required<Pick<BaseProps, "va
             variant === "primary" ? "bg-accent text-accent-ink" : "text-current",
           )}
         >
-          <ArrowIcon className="size-5 transition-transform duration-[350ms] ease-snap group-hover/btn:translate-x-10" />
-          <ArrowIcon className="absolute size-5 -translate-x-10 transition-transform duration-[350ms] ease-snap group-hover/btn:translate-x-0" />
+          <ArrowIcon className="size-5 transition-transform duration-[400ms] ease-snap group-hover/btn:translate-x-5 group-focus-visible/btn:translate-x-5" />
         </span>
       )}
     </>
