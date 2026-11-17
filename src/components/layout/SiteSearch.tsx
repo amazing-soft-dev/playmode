@@ -7,6 +7,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { SearchIcon } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { trapFocus } from "@/lib/focus-trap";
 import { searchSite } from "@/lib/search-index";
 
 /**
@@ -23,6 +24,7 @@ export function SiteSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const results = useMemo(() => searchSite(query), [query]);
 
   const [lastPath, setLastPath] = useState(pathname);
@@ -95,8 +97,10 @@ export function SiteSearch() {
         {open && (
           <motion.div
             key="search"
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
+            onKeyDown={(e) => trapFocus(e, dialogRef.current)}
             aria-label="Search the site"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
