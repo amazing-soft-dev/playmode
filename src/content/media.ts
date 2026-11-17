@@ -14,6 +14,11 @@ export const photos = {
   promoDownload: "promo-download",
   ctaArcade: "cta-arcade",
   dailyCard: "daily-card",
+  // Featured creators (portraits; names on the site are generated nicknames)
+  creator1: "creator-1",
+  creator2: "creator-2",
+  creator3: "creator-3",
+  creator4: "creator-4",
 } as const;
 
 export type PhotoSlot = keyof typeof photos;
