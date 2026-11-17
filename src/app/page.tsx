@@ -1,6 +1,6 @@
 export default function HomePage() {
   return (
-    <main className="container-site section-y">
+    <div className="container-site pt-[250px] pb-[130px]">
       <p className="type-label text-ash">[ PlayerMode ]</p>
       <h1 className="type-hero mt-6 max-w-3xl">Describe a game. Play it a minute later.</h1>
       <p className="type-wordmark mt-12">PlayerMode</p>
@@ -13,6 +13,6 @@ export default function HomePage() {
       >
         Start creating
       </a>
-    </main>
+    </div>
   );
 }
