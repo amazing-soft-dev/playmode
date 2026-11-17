@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { Header } from "@/components/layout/Header";
 import { MotionProvider } from "@/components/motion";
 
 import { fontVariables } from "./fonts";
@@ -51,7 +52,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en" className={fontVariables}>
       <body>
-        <MotionProvider>{children}</MotionProvider>
+        <MotionProvider>
+          <Header />
+          <main id="main">{children}</main>
+        </MotionProvider>
       </body>
     </html>
   );
