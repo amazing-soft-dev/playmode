@@ -25,6 +25,12 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
+  /* Type families (variables come from next/font in src/app/fonts.ts) */
+  --font-*: initial;
+  --font-display: var(--font-syne), "Arial Black", sans-serif;
+  --font-sans: var(--font-host-grotesk), "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
   /* Breakpoints: 768 / 992 / 1280 / 1440 (the template switches at 767.98, 991.98, 1279.98) */
   --breakpoint-*: initial;
   --breakpoint-sm: 48rem;
@@ -82,7 +88,7 @@
     min-height: 100dvh;
     background: var(--color-ink);
     color: var(--color-paper);
-    font-family: var(--font-mono, ui-monospace, monospace);
+    font-family: var(--font-mono);
     font-size: 14px;
     font-weight: 300;
     line-height: 1.5;
@@ -138,4 +144,119 @@
 @utility text-balance-safe {
   text-wrap: balance;
   overflow-wrap: anywhere;
+}
+
+/*
+ * Type scale from the template audit. Headings are uppercase Host Grotesk with tight tracking;
+ * body copy and labels are light Geist Mono. Sizes step down at 992 px and 768 px.
+ */
+@utility type-wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(40px, 7.6vw, 100px);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@utility type-page {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 58px;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+
+  @media (max-width: 767.98px) {
+    font-size: 46px;
+  }
+}
+
+@utility type-hero {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+
+  @media (max-width: 767.98px) {
+    font-size: 38px;
+  }
+}
+
+@utility type-h2 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+
+  @media (max-width: 991.98px) {
+    font-size: 36px;
+  }
+}
+
+@utility type-h3 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 34px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+
+  @media (max-width: 767.98px) {
+    font-size: 32px;
+  }
+}
+
+@utility type-h4 {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+@utility type-stat {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 54px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+@utility type-body {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+@utility type-small {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@utility type-label {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@utility type-caps {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
 }
