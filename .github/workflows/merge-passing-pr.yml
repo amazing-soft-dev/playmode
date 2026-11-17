@@ -1,0 +1,57 @@
+name: Merge passing pull request
+
+# workflow_run only fires for workflow files on the default branch (main).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  merge:
+    name: Merge the validated pull request
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      # Merging with a personal token makes the resulting push to dev start the next workflows.
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      REPO: ${{ github.repository }}
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+    steps:
+      - name: Find the pull request CI validated
+        id: pr
+        run: |
+          pr=$(gh api "repos/$REPO/pulls?state=open&per_page=100" \
+            --jq "map(select(.head.sha == \"$HEAD_SHA\" and .head.ref == \"$HEAD_BRANCH\" and .head.repo.full_name == \"$REPO\")) | .[0] // empty")
+          if [ -z "$pr" ]; then
+            echo "No open pull request in $REPO has head $HEAD_BRANCH@$HEAD_SHA (it may have moved on); nothing to do."
+            echo "number=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "number=$(jq -r .number <<<"$pr")" >> "$GITHUB_OUTPUT"
+          echo "base=$(jq -r .base.ref <<<"$pr")" >> "$GITHUB_OUTPUT"
+          echo "head=$(jq -r .head.ref <<<"$pr")" >> "$GITHUB_OUTPUT"
+
+      - name: Merge when the branch pair is eligible
+        if: steps.pr.outputs.number != ''
+        env:
+          NUMBER: ${{ steps.pr.outputs.number }}
+          BASE: ${{ steps.pr.outputs.base }}
+          HEAD: ${{ steps.pr.outputs.head }}
+        run: |
+          eligible=false
+          if [ "$BASE" = "dev" ] && [[ "$HEAD" =~ ^(feat|fix|docs|ci|build)/ ]]; then eligible=true; fi
+          if [ "$BASE" = "main" ] && [ "$HEAD" = "dev" ]; then eligible=true; fi
+          if [ "$eligible" != "true" ]; then
+            echo "#$NUMBER ($HEAD -> $BASE) is not an automatic pair; leaving it for a person."
+            exit 0
+          fi
+          # --match-head-commit refuses the merge if someone pushed after CI validated $HEAD_SHA.
+          gh pr merge "$NUMBER" --repo "$REPO" --merge --match-head-commit "$HEAD_SHA"
+          echo "Merged #$NUMBER ($HEAD -> $BASE) at $HEAD_SHA."
