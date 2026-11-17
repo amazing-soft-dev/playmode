@@ -1,7 +1,7 @@
 import { POLICY } from "../../domain/policy.ts";
 import type { Game, GameVersion, Id, Report } from "../../domain/types.ts";
 import { GAMES, VERSIONS } from "../../fixtures/games.ts";
-import type { GalleryQuery, GameRepo, PublishInput, ReportRepo } from "../types.ts";
+import type { DraftInput, GalleryQuery, GameRepo, PublishInput, ReportRepo } from "../types.ts";
 import { type KeyValueStore, memoryStore, readJson, writeJson } from "./store.ts";
 
 interface GameState {
@@ -9,9 +9,31 @@ interface GameState {
   versions: GameVersion[];
   likes: string[]; // `${userId}:${gameId}`
   reports: Report[];
+  /** HTML of saved versions, keyed by version id (storage stand-in). */
+  html?: Record<string, string>;
 }
 
 const KEY = "pm.games.v1";
+
+let versionCounter = 0;
+
+function makeVersion(gameId: Id, input: { prompt: string; html: string; model: string }, createdAt: string): GameVersion {
+  versionCounter += 1;
+  const id = `${gameId}-v${Date.now().toString(36)}${versionCounter}`;
+  return {
+    id,
+    gameId,
+    prompt: input.prompt,
+    htmlPath: `mock://versions/${id}`,
+    sizeBytes: new TextEncoder().encode(input.html).length,
+    model: input.model,
+    tokensIn: 0,
+    tokensOut: 0,
+    errorLog: [],
+    // Versions created in the same millisecond still sort in creation order.
+    createdAt: new Date(Date.parse(createdAt) + versionCounter % 1000).toISOString(),
+  };
+}
 
 /** Games and reports share state: reports can hide a game. */
 export function createMockGames(store: KeyValueStore = memoryStore()): { games: GameRepo; reports: ReportRepo } {
@@ -79,6 +101,58 @@ export function createMockGames(store: KeyValueStore = memoryStore()): { games: 
       });
       save(state);
       return game;
+    },
+    async saveDraft({ ownerId, ownerName, template, prompt, html, model }: DraftInput) {
+      const state = load();
+      const now = new Date().toISOString();
+      const id = `draft-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+      const version = makeVersion(id, { prompt, html, model }, now);
+      const game: Game = {
+        id,
+        ownerId,
+        ownerName,
+        title: prompt.slice(0, 48) || "Untitled game",
+        description: "",
+        tags: [template],
+        template,
+        status: "draft",
+        visibility: "private",
+        allowDownload: false,
+        license: "all-rights-reserved",
+        currentVersionId: version.id,
+        likeCount: 0,
+        weeklyLikeCount: 0,
+        playCount: 0,
+        reportCount: 0,
+        staffPick: false,
+        createdAt: now,
+        publishedAt: null,
+      };
+      state.games.push(game);
+      state.versions.push(version);
+      state.html = { ...state.html, [version.id]: html };
+      save(state);
+      return { game, version };
+    },
+    async addVersion(gameId: Id, ownerId: Id, input) {
+      const state = load();
+      const game = state.games.find((g) => g.id === gameId && g.ownerId === ownerId);
+      if (!game) throw new Error("Game not found");
+      const version = makeVersion(gameId, input, new Date().toISOString());
+      state.versions.push(version);
+      state.html = { ...state.html, [version.id]: input.html };
+      game.currentVersionId = version.id;
+      // Keep only the newest versions (plan: last five) and drop the HTML of the rest.
+      const mine = state.versions.filter((v) => v.gameId === gameId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      for (const old of mine.slice(POLICY.versionsKept)) {
+        state.versions = state.versions.filter((v) => v.id !== old.id);
+        if (state.html) delete state.html[old.id];
+      }
+      save(state);
+      return version;
+    },
+    async getVersionHtml(versionId) {
+      return load().html?.[versionId] ?? null;
     },
     async recordPlay(gameId) {
       const state = load();
