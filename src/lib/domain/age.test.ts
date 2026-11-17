@@ -37,6 +37,7 @@ test("generated nicknames use friendly words and two digits", () => {
   let i = 0;
   const seq = [0, 0, 0.5];
   const name = generateNickname(() => seq[i++ % seq.length]!);
-  assert.equal(name, "PixelOtter55");
+  // Draw order: digits, adjective, noun.
+  assert.equal(name, "PixelPanda10");
   for (let n = 0; n < 50; n += 1) assert.ok(isGeneratedNickname(generateNickname()));
 });
