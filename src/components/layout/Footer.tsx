@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { BackgroundVideo } from "@/components/media/BackgroundVideo";
 import { Reveal } from "@/components/motion";
 import { WordmarkRow } from "@/components/sections/WordmarkRow";
@@ -57,6 +58,10 @@ export function Footer() {
             </Reveal>
           )}
         </nav>
+
+        <Reveal className="flex justify-center md:justify-start">
+          <NewsletterForm />
+        </Reveal>
 
         <Reveal className="type-nav flex flex-col items-center gap-1 text-fog md:flex-row md:justify-between">
           <p>{brand.copyright}</p>

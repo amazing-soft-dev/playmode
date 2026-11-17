@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 
 import { useProfile } from "@/components/auth/useProfile";
+import { IS_STATIC_EXPORT } from "@/components/forms/useFormPost";
 import { GamePlayer } from "@/components/game/GamePlayer";
 import { BracketLabel, Button, DownloadIcon, Field, FlagIcon, HeartIcon, Select, Tag, Textarea } from "@/components/ui";
 import { anonymousId } from "@/lib/anon-id";
@@ -93,7 +94,17 @@ export function PlayView({ id: routeId }: { id: string }) {
   const report = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    await browserRepos().reports.create(game.id, profile?.id ?? anonymousId(), String(data.get("reason")) as ReportReason, String(data.get("details") ?? ""));
+    const reason = String(data.get("reason")) as ReportReason;
+    const details = String(data.get("details") ?? "");
+    await browserRepos().reports.create(game.id, profile?.id ?? anonymousId(), reason, details);
+    // Alert the team too (server build only); the report is already recorded either way.
+    if (!IS_STATIC_EXPORT) {
+      void fetch("/api/report", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ gameId: game.id, reason, details }),
+      }).catch(() => undefined);
+    }
     setReportOpen(false);
     setNotice("Thanks. We review reports within 48 hours, and games with several reports are hidden until then.");
   };
