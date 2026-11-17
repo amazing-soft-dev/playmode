@@ -6,7 +6,8 @@
 //   npm run media:fetch -- --force   re-fetch everything
 //   npm run media:fetch -- <id> ...  fetch only these ids
 //
-// Photos are resized to at most 2400 px wide and saved as progressive mozjpeg (quality 80).
+// Photos are fitted to 2400 px on the longest side and saved as progressive mozjpeg, starting at
+// quality 80 and stepping down until the file is under 600 KB.
 // Videos need ffmpeg (on PATH or in the FFMPEG env var): they are re-encoded to H.264 without
 // audio, at most 1920 px wide, with +faststart, and a poster frame is written for each one.
 import { execFileSync } from "node:child_process";
@@ -18,6 +19,7 @@ import sharp from "sharp";
 
 const MANIFEST = "media/manifest.json";
 const PHOTO_MAX_WIDTH = 2400;
+const PHOTO_TARGET_BYTES = 600 * 1024;
 const VIDEO_MAX_WIDTH = 1920;
 const USER_AGENT = "PlayerModeMediaFetch/1.0 (+https://github.com/amazing-soft-dev/playmode)";
 
@@ -36,11 +38,18 @@ async function download(url) {
 
 async function fetchPhoto(item) {
   const input = await download(item.downloadUrl);
-  const { data, info } = await sharp(input)
-    .rotate()
-    .resize({ width: PHOTO_MAX_WIDTH, withoutEnlargement: true })
-    .jpeg({ quality: 80, mozjpeg: true, progressive: true })
-    .toBuffer({ resolveWithObject: true });
+  // Fit the longest side to 2400 px (portrait shots too), then step the quality down until the
+  // file fits the photo budget that check:images enforces.
+  let result;
+  for (const quality of [80, 74, 68, 62, 56]) {
+    result = await sharp(input)
+      .rotate()
+      .resize({ width: PHOTO_MAX_WIDTH, height: PHOTO_MAX_WIDTH, fit: "inside", withoutEnlargement: true })
+      .jpeg({ quality, mozjpeg: true, progressive: true })
+      .toBuffer({ resolveWithObject: true });
+    if (result.data.length <= PHOTO_TARGET_BYTES) break;
+  }
+  const { data, info } = result;
   mkdirSync(dirname(item.file), { recursive: true });
   writeFileSync(item.file, data);
   item.width = info.width;
