@@ -10,6 +10,7 @@ import { utcDateKey } from "@/lib/domain/time";
 import type { GameVersion, License, Profile, TemplateId } from "@/lib/domain/types";
 import { LICENSE_NAMES, buildZip, saveFile, slugify, withLicenseHeader } from "@/lib/download";
 import { moderatePrompt, moderateText } from "@/lib/moderation";
+import { playHref } from "@/lib/play-href";
 import { repairCostsBuild } from "@/lib/quota";
 import { browserRepos } from "@/lib/repos";
 
@@ -232,7 +233,7 @@ export function Workbench({ game, profile, errors, onReplace, onBuildUsed }: Wor
         </div>
         {publishedId && (
           <p role="status" className="type-small text-accent">
-            Published! <Link href={`/play/${publishedId}`} className="underline underline-offset-4">Open the game page</Link>
+            Published! <Link href={playHref({ id: publishedId })} className="underline underline-offset-4">Open the game page</Link>
           </p>
         )}
         {note && (
