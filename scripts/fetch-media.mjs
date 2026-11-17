@@ -9,7 +9,8 @@
 // Photos are fitted to 2400 px on the longest side and saved as progressive mozjpeg, starting at
 // quality 80 and stepping down until the file is under 600 KB.
 // Videos need ffmpeg (on PATH or in the FFMPEG env var): they are re-encoded to H.264 without
-// audio, at most 1920 px wide, with +faststart, and a poster frame is written for each one.
+// audio, at most 1920 px wide (or the entry's maxWidth), trimmed to trimSeconds (default 12),
+// with +faststart, and a poster frame is written for each one.
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -21,6 +22,7 @@ const MANIFEST = "media/manifest.json";
 const PHOTO_MAX_WIDTH = 2400;
 const PHOTO_TARGET_BYTES = 600 * 1024;
 const VIDEO_MAX_WIDTH = 1920;
+const VIDEO_DEFAULT_SECONDS = 12;
 const USER_AGENT = "PlayerModeMediaFetch/1.0 (+https://github.com/amazing-soft-dev/playmode)";
 
 const args = process.argv.slice(2);
@@ -64,10 +66,14 @@ async function fetchVideo(item) {
   const raw = join(tmpdir(), `playermode-${item.id}-source.mp4`);
   writeFileSync(raw, await download(item.downloadUrl));
   mkdirSync(dirname(item.file), { recursive: true });
+  // Background loops only need a few seconds; trimming keeps files small.
+  const seconds = String(item.trimSeconds ?? VIDEO_DEFAULT_SECONDS);
+  const width = Math.min(item.maxWidth ?? VIDEO_MAX_WIDTH, VIDEO_MAX_WIDTH);
   runFfmpeg([
     "-i", raw,
+    "-t", seconds,
     "-an",
-    "-vf", `scale='min(${VIDEO_MAX_WIDTH},iw)':-2,fps=30`,
+    "-vf", `scale='min(${width},iw)':-2,fps=30`,
     "-c:v", "libx264", "-preset", "slow", "-crf", "28", "-pix_fmt", "yuv420p",
     "-movflags", "+faststart",
     item.file,
@@ -81,7 +87,8 @@ async function fetchVideo(item) {
   if (poster) {
     const frame = join(tmpdir(), `playermode-${item.id}-poster.png`);
     runFfmpeg(["-ss", "0.5", "-i", item.file, "-frames:v", "1", frame]);
-    const { info } = await sharp(frame)
+    mkdirSync(dirname(poster.file), { recursive: true });
+    const info = await sharp(frame)
       .jpeg({ quality: 78, mozjpeg: true, progressive: true })
       .toFile(poster.file);
     poster.width = info.width;
