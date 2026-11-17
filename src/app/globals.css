@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/*
+ * PlayerMode design tokens.
+ * Monochrome Playmode base (values from the template audit) plus ONE accent: neon lime.
+ * The accent is reserved for calls to action, highlights, the active state, focus rings
+ * and hover effects. No other saturated colour is used anywhere on the site.
+ */
+@theme {
+  /* Colour */
+  --color-*: initial;
+  --color-ink: #000000; /* page background */
+  --color-paper: #ffffff; /* primary text */
+  --color-fog: #ffffffb3; /* secondary text, 70% white */
+  --color-ash: #7b7878; /* muted text */
+  --color-line: #333333; /* borders, dividers, card outlines */
+  --color-panel: #111111; /* raised surfaces, media placeholders */
+  --color-smoke: #ffffff0a; /* subtle fills */
+  --color-veil: #000000a1; /* header backdrop */
+  --color-scrim: #00000099; /* overlays on media */
+  --color-accent: #c6ff3d; /* neon lime */
+  --color-accent-ink: #0a0a0a; /* text on lime */
+  --color-accent-soft: #c6ff3d26; /* lime tint for chips and highlights */
+  --color-danger: #ff5c5c; /* form errors only */
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Breakpoints: 768 / 992 / 1280 / 1440 (the template switches at 767.98, 991.98, 1279.98) */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 48rem;
+  --breakpoint-md: 62rem;
+  --breakpoint-lg: 80rem;
+  --breakpoint-xl: 90rem;
+
+  /* Layout */
+  --container-site: 1330px;
+  --container-prose: 720px;
+
+  /* Radii: the template keeps media and cards almost square */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-card: 10px;
+  --radius-tile: 11px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease-snap: cubic-bezier(0.6, 0, 0.2, 1); /* button arrow swap */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1); /* reveals */
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1); /* menus */
+}
+
+/* Spacing that changes per breakpoint */
+:root {
+  --gutter: 15px;
+  --section: 130px;
+  --header-h: 72px;
+}
+
+@media (max-width: 991.98px) {
+  :root {
+    --gutter: 20px;
+    --section: 100px;
+    --header-h: 64px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  :root {
+    --section: 80px;
+  }
+}
