@@ -43,11 +43,16 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               {p}
             </p>
           ))}
-          <div className="mt-6 flex flex-wrap gap-4 border-t border-line pt-8">
-            <Button href={`/news/${next.slug}`}>Next: {next.title}</Button>
-            <Button href="/news" variant="link">
-              All posts
-            </Button>
+          <div className="mt-6 flex flex-col gap-4 border-t border-line pt-8">
+            <p className="type-label text-ash">
+              Next: <span className="text-paper">{next.title}</span>
+            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <Button href={`/news/${next.slug}`}>Read next post</Button>
+              <Button href="/news" variant="link">
+                All posts
+              </Button>
+            </div>
           </div>
         </div>
       </article>
