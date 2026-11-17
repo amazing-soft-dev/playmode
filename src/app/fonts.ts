@@ -23,7 +23,7 @@ export const sans = Host_Grotesk({
 
 export const mono = Geist_Mono({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["100", "300", "400", "500"],
   variable: "--font-geist-mono",
   display: "swap",
 });

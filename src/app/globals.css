@@ -267,3 +267,12 @@
   letter-spacing: -0.5px;
   text-transform: uppercase;
 }
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
