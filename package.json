@@ -1,0 +1,29 @@
+{
+  "name": "playermode",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PlayerMode: describe a game, play it a minute later.",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "babel-plugin-react-compiler": "1.0.0",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
+  }
+}
