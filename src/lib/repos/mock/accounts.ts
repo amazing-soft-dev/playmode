@@ -1,16 +1,24 @@
-import type { AgeBand, BuildUsage, Profile } from "../../domain/types.ts";
+import { type AccountDecision, accountDecision } from "../../domain/age.ts";
+import { generateNickname } from "../../domain/nickname.ts";
+import type { BuildUsage, Profile } from "../../domain/types.ts";
 import type { AuthRepo, SignInInput, UsageRepo } from "../types.ts";
 import { type KeyValueStore, memoryStore, readJson, writeJson } from "./store.ts";
 
 const PROFILE_KEY = "pm.profile.v1";
 const USAGE_KEY = "pm.usage.v1";
+/** The first age-gate answer is remembered so a child cannot retry with a different year. */
+export const AGE_GATE_KEY = "pm.agegate.v1";
 
-/** Age band from a birth year; the age gate (issue #31) decides who may sign in at all. */
-function ageBandFor(birthYear: number, now: number): AgeBand {
-  const age = new Date(now).getUTCFullYear() - birthYear;
-  if (age < 13) return "under13";
-  if (age < 18) return "13to17";
-  return "adult";
+type GateReason = Exclude<AccountDecision, { ok: true }>["reason"];
+
+export class AgeGateError extends Error {
+  readonly reason: GateReason;
+
+  constructor(reason: GateReason) {
+    super(reason);
+    this.name = "AgeGateError";
+    this.reason = reason;
+  }
 }
 
 export function createMockAuth(store: KeyValueStore = memoryStore(), now: () => number = Date.now): AuthRepo {
@@ -19,15 +27,21 @@ export function createMockAuth(store: KeyValueStore = memoryStore(), now: () => 
       return readJson<Profile | null>(store, PROFILE_KEY, null);
     },
     async signIn({ email, displayName, birthYear, country }: SignInInput) {
-      const ageBand = ageBandFor(birthYear, now());
-      if (ageBand === "under13") throw new Error("Accounts are for players 13 and older.");
+      // A remembered answer wins over a new one: the gate is asked once per browser.
+      const remembered = readJson<{ birthYear: number; country: string } | null>(store, AGE_GATE_KEY, null);
+      const gate = remembered ?? { birthYear, country };
+      if (!remembered) writeJson(store, AGE_GATE_KEY, gate);
+      const decision = accountDecision(gate.birthYear, gate.country, now());
+      if (!decision.ok) throw new AgeGateError(decision.reason);
+      const ageBand = decision.band;
       const profile: Profile = {
         id: `u-${email.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
-        displayName,
+        // Under-18 accounts always show a generated nickname instead of a chosen name.
+        displayName: ageBand === "adult" ? displayName.trim().slice(0, 24) : generateNickname(),
         nicknameGenerated: ageBand !== "adult",
-        birthYear,
+        birthYear: gate.birthYear,
         ageBand,
-        country: country.toUpperCase(),
+        country: gate.country.toUpperCase(),
         plan: "free",
         isAdmin: email.trim().toLowerCase() === "founder@playermode.test",
         createdAt: new Date(now()).toISOString(),
