@@ -37,3 +37,37 @@ jobs:
         run: npm run check:images
       - name: Unit tests
         run: npm test
+
+  build:
+    name: Build (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [server, static]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: latest
+          cache: npm
+      - run: npm ci
+
+      # Full app with /api routes: what Vercel runs.
+      - name: Build server target
+        if: matrix.target == 'server'
+        run: npm run build
+
+      # Plain HTML in out/. No server, so /api must be absent.
+      - name: Build responsive images
+        if: matrix.target == 'static'
+        run: npm run images
+      - name: Build static target
+        if: matrix.target == 'static'
+        env:
+          NEXT_OUTPUT: export
+        run: npm run build
+      - name: Verify static export
+        if: matrix.target == 'static'
+        run: npm run verify:export
