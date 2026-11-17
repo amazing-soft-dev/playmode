@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { SkipLink } from "@/components/a11y/SkipLink";
 import { ProductionAnalytics } from "@/components/analytics/ProductionAnalytics";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -87,9 +88,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           // "<" is escaped so no string in the data can close the script element early.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
+        <SkipLink />
         <MotionProvider>
           <Header actions={<HeaderActions />} />
-          <main id="main">{children}</main>
+          <main id="main" tabIndex={-1} className="outline-none">
+            {children}
+          </main>
           <Footer />
         </MotionProvider>
         <ProductionAnalytics />
