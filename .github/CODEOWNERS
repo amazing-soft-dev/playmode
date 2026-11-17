@@ -1,0 +1,5 @@
+# Default owner for everything in the repository.
+*       @amazing-soft-dev
+
+# Workflows and branch rules.
+/.github/ @amazing-soft-dev
