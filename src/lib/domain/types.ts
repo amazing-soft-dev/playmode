@@ -173,7 +173,6 @@ export interface CatalogGame {
   genres: string[];
   platforms: PlatformFamily[];
   esrb: EsrbRating | null;
-  rating: number;
   price: "free" | "paid";
   stores: StoreLink[];
   /** Link to the record in the source database (RAWG requires a link back). */
