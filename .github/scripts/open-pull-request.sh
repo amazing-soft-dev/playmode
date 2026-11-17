@@ -10,14 +10,17 @@ set -euo pipefail
 
 PREFIX_RE='^(feat|fix|docs|ci|build)/([0-9]+)-'
 
-# Issue numbers referenced by "Closes/Fixes/Resolves #N" lines in commit messages on stdin.
+# Issue numbers from trailer-style lines that start with Closes/Fixes/Resolves #N (any case),
+# read from commit messages on stdin. Prose that only mentions a keyword or a branch is ignored.
 keyword_issues() {
-  grep -ioE '\b(close[sd]?|fix(e[sd])?|resolve[sd]?)[[:space:]]+#[0-9]+' | grep -oE '[0-9]+' || true
+  { grep -iE '^[[:space:]]*(close[sd]?|fix(e[sd])?|resolve[sd]?)[[:space:]]+#[0-9]+' || true; } \
+    | { grep -oE '#[0-9]+' || true; } | tr -d '#'
 }
 
-# Issue numbers taken from prefix branch names (feat/12-...) on stdin.
+# Issue numbers from the head branch of merged pull requests, read from merge commit subjects
+# ("Merge pull request #64 from owner/feat/12-short-description") on stdin.
 branch_issues() {
-  grep -oE '(feat|fix|docs|ci|build)/[0-9]+-' | grep -oE '[0-9]+' || true
+  sed -nE 's@^Merge pull request #[0-9]+ from [^/]+/(feat|fix|docs|ci|build)/([0-9]+)-.*@\2@p'
 }
 
 open_into_dev() {
@@ -70,16 +73,19 @@ open_dev_into_main() {
     return
   fi
 
-  local log issues body existing
-  log=$(git log --format='%B' origin/main..origin/dev)
-  issues=$( { printf '%s\n' "$log" | keyword_issues; printf '%s\n' "$log" | branch_issues; } | sort -n -u)
+  local issues body existing
+  issues=$( {
+    git log --format='%B' origin/main..origin/dev | keyword_issues
+    git log --merges --format='%s' origin/main..origin/dev | branch_issues
+  } | sort -n -u)
 
   body=$(mktemp)
   {
     echo "Promotes \`dev\` to \`main\`. Merges automatically once **CI passed** is green; Vercel then deploys \`main\`."
     echo
     echo "### Pull requests"
-    git log --merges --format='- %s' origin/main..origin/dev | sed -E 's/^- Merge pull request (#[0-9]+) from [^ ]+/- \1/'
+    git log --merges --format='%s' origin/main..origin/dev \
+      | sed -nE 's@^Merge pull request (#[0-9]+) from [^/]+/(.+)$@- \1 (`\2`)@p'
     if [[ -n "$issues" ]]; then
       echo
       echo "### Issues closed by this merge"
