@@ -91,7 +91,8 @@ open_dev_into_main() {
 
   existing=$(gh pr list --head dev --base main --state open --json number --jq '.[0].number // empty')
   if [[ -n "$existing" ]]; then
-    gh pr edit "$existing" --body-file "$body"
+    # REST instead of `gh pr edit`: its GraphQL query also needs read:org, which the token lacks.
+    gh api --method PATCH "repos/{owner}/{repo}/pulls/$existing" -F "body=@$body" --silent
     echo "Updated pull request #$existing (dev -> main)."
   else
     gh pr create --base main --head dev --title "Release: promote dev to main" --body-file "$body"
