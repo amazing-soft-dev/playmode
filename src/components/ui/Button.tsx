@@ -33,7 +33,7 @@ export type ButtonProps = AsLink | AsButton;
 
 function framed(variant: ButtonVariant, block: boolean, className?: string) {
   return cn(
-    "group/btn relative inline-flex h-12 shrink-0 items-stretch border-y text-paper transition-colors duration-[400ms] ease-snap",
+    "group/btn relative inline-flex h-12 max-w-full shrink-0 items-stretch border-y text-paper transition-colors duration-[400ms] ease-snap",
     "border-paper hover:border-accent hover:text-accent focus-visible:border-accent focus-visible:text-accent",
     "disabled:pointer-events-none disabled:opacity-40 aria-disabled:pointer-events-none aria-disabled:opacity-40",
     variant === "primary" && "border-paper",
@@ -55,7 +55,8 @@ function Inner({ variant, arrow, block, children }: Required<Pick<BaseProps, "va
       <span aria-hidden className={cn(tick, "right-0 -bottom-px")} />
       <span
         className={cn(
-          "type-body flex min-w-48 items-center px-5 tracking-[0.03em] whitespace-nowrap",
+          // min-w-0 + truncate: a long label shrinks to fit narrow screens instead of overflowing.
+          "type-body flex min-w-0 items-center truncate px-5 tracking-[0.03em] whitespace-nowrap sm:min-w-48",
           arrow && "border-r border-current",
           block && "flex-1",
         )}

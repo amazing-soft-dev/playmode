@@ -60,7 +60,7 @@ export function Chip({
       type="button"
       aria-pressed={selected}
       className={cn(
-        "type-label inline-flex h-9 items-center rounded-pill border px-4 transition-colors duration-200",
+        "type-label inline-flex h-9 items-center border px-4 transition-colors duration-200",
         selected
           ? "border-accent bg-accent text-accent-ink"
           : "border-line text-fog hover:border-accent hover:text-accent",
@@ -75,7 +75,7 @@ export function Chip({
 export function Tag({ className, ...props }: ComponentPropsWithoutRef<"span">) {
   return (
     <span
-      className={cn("type-label inline-flex h-7 items-center rounded-pill border border-line px-3 text-fog", className)}
+      className={cn("type-label inline-flex h-7 items-center border border-line px-3 text-fog", className)}
       {...props}
     />
   );
