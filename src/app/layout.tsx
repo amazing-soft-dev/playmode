@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { ProductionAnalytics } from "@/components/analytics/ProductionAnalytics";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { HeaderActions } from "@/components/layout/HeaderActions";
@@ -91,6 +92,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <main id="main">{children}</main>
           <Footer />
         </MotionProvider>
+        <ProductionAnalytics />
       </body>
     </html>
   );
