@@ -6,12 +6,25 @@ import { Header } from "@/components/layout/Header";
 import { HeaderActions } from "@/components/layout/HeaderActions";
 import { MotionProvider } from "@/components/motion";
 
+import { brand, seo } from "@/content/site";
+
 import { fontVariables } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PlayerMode",
-  description: "Describe a game and play it a minute later.",
+  metadataBase: new URL(seo.siteUrl),
+  title: { default: seo.title, template: seo.titleTemplate },
+  description: seo.description,
+  applicationName: brand.name,
+  alternates: { canonical: "./" },
+  openGraph: {
+    type: "website",
+    siteName: brand.name,
+    locale: seo.locale,
+    title: seo.title,
+    description: seo.description,
+  },
+  twitter: { card: "summary_large_image", title: seo.title, description: seo.description },
   manifest: "/site.webmanifest",
   icons: {
     icon: [
@@ -50,10 +63,29 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: brand.name,
+      url: seo.siteUrl,
+      description: seo.description,
+    },
+    { "@type": "Organization", name: brand.name, url: seo.siteUrl, logo: `${seo.siteUrl}/icons/light/android-chrome-512x512.png` },
+  ],
+};
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className={fontVariables}>
       <body>
+        <script
+          type="application/ld+json"
+          // Structured data for search engines: the site and the organisation behind it.
+          // "<" is escaped so no string in the data can close the script element early.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        />
         <MotionProvider>
           <Header actions={<HeaderActions />} />
           <main id="main">{children}</main>
