@@ -1,0 +1,35 @@
+/** Copy for game recommendations (plan section 05, feature 2). */
+export const recommend = {
+  label: "Game picks",
+  title: "Find your next game",
+  lead: "Tell us what you like and what you want to spend. We search a real game database and explain why each pick fits. We never invent a game.",
+  askLabel: "What do you feel like playing?",
+  askPlaceholder: "A cosy puzzle game I can play on my phone with my little brother",
+  submit: "Get picks",
+  priceChips: [
+    { id: "any", label: "Free or paid" },
+    { id: "free", label: "Free" },
+    { id: "paid", label: "Paid" },
+  ],
+  platformChips: [
+    { id: "pc", label: "PC" },
+    { id: "mobile", label: "Mobile" },
+    { id: "browser", label: "Browser" },
+    { id: "console", label: "Console" },
+  ],
+  genreLabel: "Genres",
+  kidFriendly: "Kid-friendly (E and E10+ only)",
+  childSafeNote: "Showing games rated E and E10+ because we don't know your age. Sign in to see more.",
+  resultsLabel: "Picks",
+  noResults: "Nothing in the catalog fits that well.",
+  buildInstead: {
+    title: "Build your own instead",
+    text: "Turn your request into a game in about a minute.",
+    cta: "Open the maker",
+  },
+  free: "Free",
+  paid: "Paid",
+  viewOn: "View on",
+  sourceLink: "Game record",
+  fallbackNote: "The game database is unavailable, so here are our staff picks.",
+} as const;
