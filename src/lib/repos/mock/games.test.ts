@@ -37,3 +37,18 @@ test("three reports hide a game until it is reviewed", async () => {
   for (const report of await reports.listQueue()) await reports.resolve(report.id, "dismissed");
   assert.equal((await games.get("tide-tiles"))!.status, "published");
 });
+
+test("drafts keep only the last five versions and their HTML", async () => {
+  const { games } = createMockGames();
+  const base = { ownerId: "u-1", ownerName: "Tester", template: "runner" as const, model: "mock" };
+  const { game, version } = await games.saveDraft({ ...base, prompt: "first", html: "<html>1</html>" });
+  assert.equal(game.status, "draft");
+  assert.equal(await games.getVersionHtml(version.id), "<html>1</html>");
+  for (let i = 2; i <= 7; i += 1) await games.addVersion(game.id, "u-1", { prompt: `v${i}`, html: `<html>${i}</html>`, model: "mock" });
+  const versions = await games.listVersions(game.id);
+  assert.equal(versions.length, 5);
+  assert.equal(versions[0]?.prompt, "v7");
+  assert.equal(await games.getVersionHtml(version.id), null);
+  assert.equal((await games.get(game.id))?.currentVersionId, versions[0]?.id);
+  await assert.rejects(games.addVersion(game.id, "someone-else", { prompt: "x", html: "x", model: "mock" }));
+});

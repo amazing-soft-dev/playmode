@@ -53,6 +53,15 @@ export interface PublishInput {
   allowDownload: boolean;
 }
 
+export interface DraftInput {
+  ownerId: Id;
+  ownerName: string;
+  template: TemplateId;
+  prompt: string;
+  html: string;
+  model: string;
+}
+
 export interface GameRepo {
   listGallery(query: GalleryQuery): Promise<Game[]>;
   listByOwner(ownerId: Id): Promise<Game[]>;
@@ -64,6 +73,12 @@ export interface GameRepo {
   like(gameId: Id, userId: Id): Promise<number>;
   hasLiked(gameId: Id, userId: Id): Promise<boolean>;
   publish(gameId: Id, ownerId: Id, input: PublishInput): Promise<Game>;
+  /** Saves a new private draft with its first version. */
+  saveDraft(input: DraftInput): Promise<{ game: Game; version: GameVersion }>;
+  /** Adds a version to a draft; only the last five versions are kept. */
+  addVersion(gameId: Id, ownerId: Id, input: Pick<DraftInput, "prompt" | "html" | "model">): Promise<GameVersion>;
+  /** The HTML of a saved version, or null for versions served from a static file (htmlPath). */
+  getVersionHtml(versionId: Id): Promise<string | null>;
   recordPlay(gameId: Id): Promise<void>;
 }
 

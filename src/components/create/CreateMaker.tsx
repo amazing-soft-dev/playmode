@@ -13,6 +13,8 @@ import { utcDateKey } from "@/lib/domain/time";
 import type { TemplateId } from "@/lib/domain/types";
 import { TEMPLATES, templateInfo } from "@/lib/fixtures/templates";
 import { moderatePrompt } from "@/lib/moderation";
+
+import { Workbench } from "./Workbench";
 import { type Quota, buildQuota } from "@/lib/quota";
 import { browserRepos } from "@/lib/repos";
 import { cn } from "@/lib/cn";
@@ -48,6 +50,7 @@ export function CreateMaker({ onBuilt }: { onBuilt?: (game: BuiltGame) => void }
   const [swaps, setSwaps] = useState<{ from: string; to: string }[]>([]);
   const [game, setGame] = useState<BuiltGame | null>(null);
   const [quota, setQuota] = useState<Quota | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
 
   const template: TemplateId = choice === "freeform" ? "runner" : choice;
   const info = templateInfo(template);
@@ -89,6 +92,7 @@ export function CreateMaker({ onBuilt }: { onBuilt?: (game: BuiltGame) => void }
       await refreshQuota();
       const built = { html: result.html, prompt: checked.prompt, template, model: result.model };
       setGame(built);
+      setErrors([]);
       setStatus("ready");
       onBuilt?.(built);
     } catch {
@@ -107,6 +111,7 @@ export function CreateMaker({ onBuilt }: { onBuilt?: (game: BuiltGame) => void }
   const limitReached = quota !== null && !quota.canBuild;
 
   return (
+    <div className="flex flex-col gap-10">
     <div className="grid gap-10 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-[60px]">
       <div className="flex flex-col gap-8">
         <fieldset className="flex flex-col gap-4">
@@ -211,11 +216,29 @@ export function CreateMaker({ onBuilt }: { onBuilt?: (game: BuiltGame) => void }
             <p className="type-body animate-pulse text-fog">{create.stages[stage]}…</p>
           </div>
         ) : game ? (
-          <GamePlayer html={game.html} title={game.prompt.slice(0, 60)} aspect={templateInfo(game.template).aspect} />
+          <GamePlayer
+            html={game.html}
+            title={game.prompt.slice(0, 60)}
+            aspect={templateInfo(game.template).aspect}
+            onError={(m) => setErrors((list) => [...list, m].slice(-10))}
+          />
         ) : (
           <GamePlayer src={`/games/${template}.html`} title={`Example: ${info.sampleTitle}`} aspect={info.aspect} />
         )}
       </div>
+    </div>
+      {profile && game && status === "ready" && (
+        <Workbench
+          game={game}
+          profile={profile}
+          errors={errors}
+          onReplace={(next) => {
+            setGame(next);
+            setErrors([]);
+          }}
+          onBuildUsed={() => void refreshQuota()}
+        />
+      )}
     </div>
   );
 }
