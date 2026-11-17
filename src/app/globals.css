@@ -257,3 +257,22 @@
   letter-spacing: -0.5px;
   text-transform: uppercase;
 }
+
+/* Navigation links: Geist Mono 14/500, uppercase (docs/audit/components/nav-header.md) */
+@utility type-nav {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
