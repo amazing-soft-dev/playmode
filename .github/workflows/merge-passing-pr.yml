@@ -37,3 +37,21 @@ jobs:
           echo "number=$(jq -r .number <<<"$pr")" >> "$GITHUB_OUTPUT"
           echo "base=$(jq -r .base.ref <<<"$pr")" >> "$GITHUB_OUTPUT"
           echo "head=$(jq -r .head.ref <<<"$pr")" >> "$GITHUB_OUTPUT"
+
+      - name: Merge when the branch pair is eligible
+        if: steps.pr.outputs.number != ''
+        env:
+          NUMBER: ${{ steps.pr.outputs.number }}
+          BASE: ${{ steps.pr.outputs.base }}
+          HEAD: ${{ steps.pr.outputs.head }}
+        run: |
+          eligible=false
+          if [ "$BASE" = "dev" ] && [[ "$HEAD" =~ ^(feat|fix|docs|ci|build)/ ]]; then eligible=true; fi
+          if [ "$BASE" = "main" ] && [ "$HEAD" = "dev" ]; then eligible=true; fi
+          if [ "$eligible" != "true" ]; then
+            echo "#$NUMBER ($HEAD -> $BASE) is not an automatic pair; leaving it for a person."
+            exit 0
+          fi
+          # --match-head-commit refuses the merge if someone pushed after CI validated $HEAD_SHA.
+          gh pr merge "$NUMBER" --repo "$REPO" --merge --match-head-commit "$HEAD_SHA"
+          echo "Merged #$NUMBER ($HEAD -> $BASE) at $HEAD_SHA."
