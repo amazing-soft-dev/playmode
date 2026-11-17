@@ -1,4 +1,5 @@
 import { AboutSection } from "@/components/home/AboutSection";
+import { DailyTemplates } from "@/components/home/DailyTemplates";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { StatsSection } from "@/components/home/StatsSection";
@@ -11,6 +12,7 @@ export default function HomePage() {
       <HowItWorks />
       <AboutSection />
       <StatsSection />
+      <DailyTemplates />
     </>
   );
 }
