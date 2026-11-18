@@ -19,7 +19,8 @@
     "check:images": "node scripts/check-images.mjs",
     "images": "node scripts/build-images.mjs",
     "media:fetch": "node scripts/fetch-media.mjs",
-    "verify:export": "node scripts/verify-export.mjs"
+    "verify:export": "node scripts/verify-export.mjs",
+    "audit:inspector": "node scripts/build-inspector.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
