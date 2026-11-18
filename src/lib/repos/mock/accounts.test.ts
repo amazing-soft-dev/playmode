@@ -19,7 +19,10 @@ test("adults keep their display name; teens get a generated nickname", async () 
 test("the first age-gate answer is remembered", async () => {
   const store = memoryStore();
   const auth = createMockAuth(store, now);
-  await assert.rejects(auth.signIn({ ...input, birthYear: 2016 }), (e) => e instanceof AgeGateError && e.reason === "under-13");
+  await assert.rejects(
+    auth.signIn({ ...input, birthYear: 2016 }),
+    (e) => e instanceof AgeGateError && e.reason === "under-13",
+  );
   // Retrying with an older year in the same browser is still refused.
   await assert.rejects(auth.signIn({ ...input, birthYear: 1990 }), AgeGateError);
   assert.equal(await auth.getCurrentProfile(), null);

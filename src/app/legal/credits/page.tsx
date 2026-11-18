@@ -18,8 +18,8 @@ export default function CreditsPage() {
           <BracketLabel accent>Legal</BracketLabel>
           <h1 className="type-page">Media credits</h1>
           <p className="type-body text-fog">
-            Every photo and video on PlayerMode comes from Unsplash or Pexels under their free licences. Thank you to the
-            people who made them. Generated game covers and the sample games are original to PlayerMode.
+            Every photo and video on PlayerMode comes from Unsplash or Pexels under their free licences. Thank you to
+            the people who made them. Generated game covers and the sample games are original to PlayerMode.
           </p>
         </div>
         <ul className="grid border-t border-l border-line sm:grid-cols-2 lg:grid-cols-3">

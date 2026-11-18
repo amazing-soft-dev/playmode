@@ -18,7 +18,9 @@ export function GET() {
     ...allPages.flatMap((group) => [
       `## ${group.title}`,
       "",
-      ...group.links.filter((l) => !["/account", "/login"].includes(l.href)).map((l) => `- [${l.label}](${base}${l.href})${l.description ? `: ${l.description}` : ""}`),
+      ...group.links
+        .filter((l) => !["/account", "/login"].includes(l.href))
+        .map((l) => `- [${l.label}](${base}${l.href})${l.description ? `: ${l.description}` : ""}`),
       "",
     ]),
     "## Devlog",

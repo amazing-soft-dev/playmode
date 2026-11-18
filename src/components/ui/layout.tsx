@@ -15,7 +15,7 @@ export function BracketLabel({
   as?: ElementType;
 }) {
   return (
-    <Tag className={cn("type-label inline-flex items-center gap-2 text-paper", className)}>
+    <Tag className={cn("inline-flex items-center gap-2 type-label text-paper", className)}>
       <span aria-hidden className={accent ? "text-accent" : "text-ash"}>
         [
       </span>

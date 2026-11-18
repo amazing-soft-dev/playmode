@@ -30,7 +30,12 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <BracketLabel accent>{post.category}</BracketLabel>
           <h1 className="type-page">{post.title}</h1>
           <time dateTime={post.date} className="type-label text-ash">
-            {new Date(`${post.date}T00:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}
+            {new Date(`${post.date}T00:00:00Z`).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              timeZone: "UTC",
+            })}
           </time>
         </header>
         <div className="relative aspect-[21/9] overflow-hidden border border-line">

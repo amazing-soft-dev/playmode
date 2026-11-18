@@ -22,8 +22,12 @@ export function HowItWorks() {
               index={i}
               className="group/step flex flex-col gap-6 border-r border-b border-line p-6 transition-colors duration-[400ms] ease-snap hover:bg-smoke lg:min-h-[260px] lg:p-8"
             >
-              <span className="font-mono text-[40px] leading-none font-thin text-accent">{String(i + 1).padStart(2, "0")}</span>
-              <span className="type-h4 transition-colors duration-[400ms] ease-snap group-hover/step:text-accent">{step.title}</span>
+              <span className="font-mono text-[40px] leading-none font-thin text-accent">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span className="type-h4 transition-colors duration-[400ms] ease-snap group-hover/step:text-accent">
+                {step.title}
+              </span>
               <span className="type-small text-fog">{step.text}</span>
             </Reveal>
           ))}

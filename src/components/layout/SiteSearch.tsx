@@ -88,7 +88,7 @@ export function SiteSearch() {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-keyshortcuts="Control+K Meta+K"
-        className="type-nav border-b border-paper/30 transition-colors duration-[400ms] ease-snap hover:border-accent hover:text-accent"
+        className="border-b border-paper/30 type-nav transition-colors duration-[400ms] ease-snap hover:border-accent hover:text-accent"
       >
         Search
       </button>
@@ -133,13 +133,17 @@ export function SiteSearch() {
                   aria-expanded={results.length > 0}
                   aria-controls={listId}
                   aria-activedescendant={results[active] ? `${listId}-${active}` : undefined}
-                  className="type-body h-[31px] w-full bg-transparent text-paper placeholder:text-paper/30 focus:outline-none"
+                  className="h-[31px] w-full bg-transparent type-body text-paper placeholder:text-paper/30 focus:outline-none"
                 />
-                <kbd className="type-label hidden text-ash sm:block">Esc</kbd>
+                <kbd className="hidden type-label text-ash sm:block">Esc</kbd>
               </div>
               {query.trim() !== "" && (
-                <ul id={listId} role="listbox" className="max-h-[min(441px,calc(100dvh-30vh))] overflow-y-auto border-t border-ink/40">
-                  {results.length === 0 && <li className="type-body px-5 py-4 text-fog">No results for “{query}”.</li>}
+                <ul
+                  id={listId}
+                  role="listbox"
+                  className="max-h-[min(441px,calc(100dvh-30vh))] overflow-y-auto border-t border-ink/40"
+                >
+                  {results.length === 0 && <li className="px-5 py-4 type-body text-fog">No results for “{query}”.</li>}
                   {results.map((r, i) => (
                     <li key={r.href} id={`${listId}-${i}`} role="option" aria-selected={i === active}>
                       <Link
@@ -152,10 +156,10 @@ export function SiteSearch() {
                         )}
                       >
                         <span className="type-body">
-                          <span className="type-label mr-3 text-ash">{r.kind}</span>
+                          <span className="mr-3 type-label text-ash">{r.kind}</span>
                           {r.title}
                         </span>
-                        <span className="type-small line-clamp-1 text-fog">{r.detail}</span>
+                        <span className="line-clamp-1 type-small text-fog">{r.detail}</span>
                       </Link>
                     </li>
                   ))}

@@ -2,7 +2,13 @@ import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
-const base = { fill: "none", stroke: "currentColor", strokeWidth: 1.5, viewBox: "0 0 20 20", "aria-hidden": true } as const;
+const base = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.5,
+  viewBox: "0 0 20 20",
+  "aria-hidden": true,
+} as const;
 
 export function ArrowIcon(props: IconProps) {
   return (

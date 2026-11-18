@@ -17,7 +17,8 @@ export const posts: Post[] = [
     title: "Why every game starts from a template",
     date: "2026-11-17",
     category: "Devlog",
-    excerpt: "Blank pages make broken games. Five tested starters make the AI's job far easier, and the results far more fun.",
+    excerpt:
+      "Blank pages make broken games. Five tested starters make the AI's job far easier, and the results far more fun.",
     photo: "newsTemplates",
     body: [
       "Early tests were humbling: asked to write a whole game from nothing, the AI often produced something that looked right and played wrong. Missing restart buttons, enemies that never spawned, controls that only worked on a keyboard.",

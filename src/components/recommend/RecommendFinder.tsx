@@ -23,7 +23,10 @@ const DAY = 24 * 60 * 60 * 1000;
 /** 24-hour cache of catalog results per filter set (plan section 05: identical queries cached). */
 function cached(key: string): CatalogGame[] | null {
   try {
-    const all = JSON.parse(localStorage.getItem(CACHE_KEY) ?? "{}") as Record<string, { at: number; results: CatalogGame[] }>;
+    const all = JSON.parse(localStorage.getItem(CACHE_KEY) ?? "{}") as Record<
+      string,
+      { at: number; results: CatalogGame[] }
+    >;
     const hit = all[key];
     return hit && Date.now() - hit.at < DAY ? hit.results : null;
   } catch {
@@ -57,7 +60,8 @@ export function RecommendFinder() {
   const [busy, setBusy] = useState(false);
   const [lastRequest, setLastRequest] = useState("");
 
-  const toggle = <T,>(list: T[], value: T) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
+  const toggle = <T,>(list: T[], value: T) =>
+    list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -100,7 +104,7 @@ export function RecommendFinder() {
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, 300))}
             placeholder={recommend.askPlaceholder}
-            className="type-body h-14 border border-line bg-ink px-4 text-paper placeholder:text-ash focus:border-accent focus:outline-none"
+            className="h-14 border border-line bg-ink px-4 type-body text-paper placeholder:text-ash focus:border-accent focus:outline-none"
           />
         </label>
         <div className="flex flex-wrap gap-2">
@@ -111,7 +115,11 @@ export function RecommendFinder() {
           ))}
           <span aria-hidden className="mx-2 w-px bg-line" />
           {recommend.platformChips.map((c) => (
-            <Chip key={c.id} selected={platforms.includes(c.id as PlatformFamily)} onClick={() => setPlatforms((p) => toggle(p, c.id as PlatformFamily))}>
+            <Chip
+              key={c.id}
+              selected={platforms.includes(c.id as PlatformFamily)}
+              onClick={() => setPlatforms((p) => toggle(p, c.id as PlatformFamily))}
+            >
               {c.label}
             </Chip>
           ))}
@@ -126,7 +134,11 @@ export function RecommendFinder() {
             ))}
           </div>
         </div>
-        <Checkbox checked={kidFriendly} onChange={(e) => setKidFriendly(e.target.checked)} label={recommend.kidFriendly} />
+        <Checkbox
+          checked={kidFriendly}
+          onChange={(e) => setKidFriendly(e.target.checked)}
+          label={recommend.kidFriendly}
+        />
         <div className="flex flex-wrap items-center gap-6">
           <Button type="submit" variant="solid" disabled={busy}>
             {busy ? "Searching…" : recommend.submit}
@@ -146,7 +158,9 @@ export function RecommendFinder() {
                 <Card className="flex h-full flex-col gap-4 p-6">
                   <div className="flex items-start justify-between gap-4">
                     <h3 className="type-h4">{game.name}</h3>
-                    <Tag className={game.price === "free" ? "border-accent text-accent" : ""}>{game.price === "free" ? recommend.free : recommend.paid}</Tag>
+                    <Tag className={game.price === "free" ? "border-accent text-accent" : ""}>
+                      {game.price === "free" ? recommend.free : recommend.paid}
+                    </Tag>
                   </div>
                   {reason && <p className="type-small text-fog">{reason}</p>}
                   <div className="flex flex-wrap gap-2">
@@ -155,14 +169,25 @@ export function RecommendFinder() {
                       <Tag key={g}>{g}</Tag>
                     ))}
                   </div>
-                  <div className="type-caps mt-auto flex flex-wrap gap-x-6 gap-y-2">
+                  <div className="mt-auto flex flex-wrap gap-x-6 gap-y-2 type-caps">
                     {game.stores.map((s) => (
-                      <a key={s.url} href={s.url} target="_blank" rel={`noopener noreferrer${s.affiliate ? " sponsored" : ""}`} className="inline-flex items-center gap-2 hover:text-accent">
+                      <a
+                        key={s.url}
+                        href={s.url}
+                        target="_blank"
+                        rel={`noopener noreferrer${s.affiliate ? " sponsored" : ""}`}
+                        className="inline-flex items-center gap-2 hover:text-accent"
+                      >
                         {recommend.viewOn} {s.store}
                         <ArrowIcon className="size-4" />
                       </a>
                     ))}
-                    <a href={game.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-ash hover:text-accent">
+                    <a
+                      href={game.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-ash hover:text-accent"
+                    >
                       {recommend.sourceLink}
                     </a>
                   </div>
@@ -183,7 +208,12 @@ export function RecommendFinder() {
           </ul>
           <p className="type-small text-ash">
             {disclosures.affiliate}{" "}
-            <a href="https://rawg.io/" target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-accent hover:underline">
+            <a
+              href="https://rawg.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline-offset-4 hover:text-accent hover:underline"
+            >
               {disclosures.rawg}
             </a>
             .

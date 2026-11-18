@@ -12,7 +12,15 @@ import { media, posterFor } from "@/lib/media";
  *   section videos cost nothing until someone scrolls to them.
  * - With prefers-reduced-motion the video is never loaded; the still poster stays.
  */
-export function BackgroundVideo({ id, className, priority = false }: { id: string; className?: string; priority?: boolean }) {
+export function BackgroundVideo({
+  id,
+  className,
+  priority = false,
+}: {
+  id: string;
+  className?: string;
+  priority?: boolean;
+}) {
   const video = media(id);
   const poster = posterFor(id);
   const wrapRef = useRef<HTMLDivElement>(null);

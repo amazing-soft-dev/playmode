@@ -7,4 +7,5 @@ Status **C (absence confirmed)**.
 - The hero/footer "PLAYMODE —( … )" row is static.
 
 ## If PlayerMode wants one (optional, not template-faithful)
+
 Keep it consistent with the system: Geist Mono 14px uppercase or logos at 30px height, linear infinite translateX, ~40–60 px/s, pause on hover, `prefers-reduced-motion: reduce` → static.

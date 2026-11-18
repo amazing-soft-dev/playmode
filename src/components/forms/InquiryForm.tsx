@@ -22,12 +22,17 @@ interface InquiryFormProps {
  * JSON to a route handler through useFormPost and shows sending, success, error and static-build
  * states. Error copy explains what to do next rather than showing raw codes.
  */
-export function InquiryForm({ endpoint, topics, submitLabel = "Send message", successMessage = "Thanks! We'll reply by email within two working days." }: InquiryFormProps) {
+export function InquiryForm({
+  endpoint,
+  topics,
+  submitLabel = "Send message",
+  successMessage = "Thanks! We'll reply by email within two working days.",
+}: InquiryFormProps) {
   const { state, onSubmit } = useFormPost(endpoint);
 
   if (state.kind === "sent") {
     return (
-      <p role="status" className="type-body border border-accent bg-accent-soft p-6 text-paper">
+      <p role="status" className="border border-accent bg-accent-soft p-6 type-body text-paper">
         {successMessage}
       </p>
     );
@@ -36,8 +41,12 @@ export function InquiryForm({ endpoint, topics, submitLabel = "Send message", su
   return (
     <form onSubmit={onSubmit} className="relative grid gap-6 md:grid-cols-2">
       <Honeypot />
-      <Field label="Name">{({ id }) => <Input id={id} name="name" required maxLength={80} autoComplete="name" />}</Field>
-      <Field label="Email">{({ id }) => <Input id={id} name="email" type="email" required maxLength={120} autoComplete="email" />}</Field>
+      <Field label="Name">
+        {({ id }) => <Input id={id} name="name" required maxLength={80} autoComplete="name" />}
+      </Field>
+      <Field label="Email">
+        {({ id }) => <Input id={id} name="email" type="email" required maxLength={120} autoComplete="email" />}
+      </Field>
       <Field label="Topic" className="md:col-span-2">
         {({ id }) => (
           <Select id={id} name="topic" required defaultValue={topics[0]?.value}>

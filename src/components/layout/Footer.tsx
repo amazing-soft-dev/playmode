@@ -35,7 +35,10 @@ export function Footer() {
               <ul className="mt-[15px] flex flex-wrap justify-center gap-x-6 gap-y-[3px] md:flex-col md:justify-start">
                 {group.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="type-nav transition-colors duration-[400ms] ease-snap hover:text-accent">
+                    <Link
+                      href={link.href}
+                      className="type-nav transition-colors duration-[400ms] ease-snap hover:text-accent"
+                    >
                       {link.label}
                     </Link>
                   </li>
@@ -63,7 +66,7 @@ export function Footer() {
           <NewsletterForm />
         </Reveal>
 
-        <Reveal className="type-nav flex flex-col items-center gap-1 text-fog md:flex-row md:justify-between">
+        <Reveal className="flex flex-col items-center gap-1 type-nav text-fog md:flex-row md:justify-between">
           <p>{brand.copyright}</p>
           <p>
             Media from Unsplash and Pexels ·{" "}

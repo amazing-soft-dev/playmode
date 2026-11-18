@@ -43,14 +43,18 @@ export function LegalDoc({
         <article className="flex max-w-[760px] flex-col gap-10">
           <header className="flex flex-col gap-6">
             <h1 className="type-page">{title}</h1>
-            <p className="type-small border-l-2 border-accent pl-4 text-fog">
+            <p className="border-l-2 border-accent pl-4 type-small text-fog">
               Draft for legal review. This text explains how PlayerMode intends to work and will be finalised by counsel
               before public launch.
             </p>
             <p className="type-body text-fog">{intro}</p>
           </header>
           {sections.map((s, i) => (
-            <section key={s.heading} id={`s${i + 1}`} className="flex scroll-mt-24 flex-col gap-4 border-t border-line pt-8">
+            <section
+              key={s.heading}
+              id={`s${i + 1}`}
+              className="flex scroll-mt-24 flex-col gap-4 border-t border-line pt-8"
+            >
               <h2 className="type-h4">
                 <span className="text-ash">{i + 1}.</span> {s.heading}
               </h2>

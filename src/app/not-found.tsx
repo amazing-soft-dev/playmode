@@ -19,7 +19,9 @@ export default function NotFound() {
       </div>
       <div className="flex max-w-xl flex-col items-center gap-10">
         <Reveal className="flex flex-col items-center gap-5">
-          <p className="font-mono text-[80px] leading-[1.2] font-thin tracking-[-1px] text-accent lg:text-[100px]">404</p>
+          <p className="font-mono text-[80px] leading-[1.2] font-thin tracking-[-1px] text-accent lg:text-[100px]">
+            404
+          </p>
           <h1 className="type-h2">Game over for this page.</h1>
         </Reveal>
         <Reveal index={1}>

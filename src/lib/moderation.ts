@@ -51,7 +51,8 @@ export function moderatePrompt(raw: string): ModerationResult {
     return {
       ok: false,
       reason: "blocked",
-      message: "That idea isn't something we can build here. Games on PlayerMode need to suit players aged 8 and up. Try another idea; this didn't use a build.",
+      message:
+        "That idea isn't something we can build here. Games on PlayerMode need to suit players aged 8 and up. Try another idea; this didn't use a build.",
     };
   }
   const replacements: { from: string; to: string }[] = [];
@@ -74,7 +75,10 @@ export function moderateText(text: string): { ok: true } | { ok: false; message:
     return { ok: false, message: "Please remove words that aren't suitable for players aged 8 and up." };
   }
   if (FRANCHISES.some(([re]) => new RegExp(re.source, "i").test(text))) {
-    return { ok: false, message: "Please don't use trademarked game or character names. Give your game an original name." };
+    return {
+      ok: false,
+      message: "Please don't use trademarked game or character names. Give your game an original name.",
+    };
   }
   return { ok: true };
 }

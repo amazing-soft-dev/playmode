@@ -31,7 +31,7 @@ export default async function GalleryPage() {
       <Section>
         <div className="container-site flex flex-col gap-10">
           <GalleryBrowser initialGames={initialGames} initialTags={initialTags} />
-          <p className="type-small max-w-3xl text-ash">{disclosures.aiGames}</p>
+          <p className="max-w-3xl type-small text-ash">{disclosures.aiGames}</p>
         </div>
       </Section>
     </>

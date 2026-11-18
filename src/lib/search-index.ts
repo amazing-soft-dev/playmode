@@ -15,30 +15,32 @@ export interface SearchEntry {
 }
 
 /** Everything the header search can find: every page, every starter template and every gallery game. */
-export const SEARCH_INDEX: SearchEntry[] = ([
-  // The cast gives every entry the optional `keywords` field before the haystack is built.
-  ...allPages.flatMap((group) =>
-    group.links.map((link) => ({
-      title: link.label,
-      href: link.href,
-      detail: link.description ?? group.title,
-      kind: "page" as const,
+export const SEARCH_INDEX: SearchEntry[] = (
+  [
+    // The cast gives every entry the optional `keywords` field before the haystack is built.
+    ...allPages.flatMap((group) =>
+      group.links.map((link) => ({
+        title: link.label,
+        href: link.href,
+        detail: link.description ?? group.title,
+        kind: "page" as const,
+      })),
+    ),
+    ...TEMPLATES.map((t) => ({
+      title: `${t.genre} template`,
+      href: `/create?template=${t.id}`,
+      detail: t.summary,
+      kind: "template" as const,
     })),
-  ),
-  ...TEMPLATES.map((t) => ({
-    title: `${t.genre} template`,
-    href: `/create?template=${t.id}`,
-    detail: t.summary,
-    kind: "template" as const,
-  })),
-  ...GAMES.map((g) => ({
-    title: g.title,
-    href: `/play/${g.id}`,
-    detail: `${g.description} · by ${g.ownerName}`,
-    kind: "game" as const,
-    keywords: g.tags.join(" "),
-  })),
-] as Omit<SearchEntry, "haystack">[])
+    ...GAMES.map((g) => ({
+      title: g.title,
+      href: `/play/${g.id}`,
+      detail: `${g.description} · by ${g.ownerName}`,
+      kind: "game" as const,
+      keywords: g.tags.join(" "),
+    })),
+  ] as Omit<SearchEntry, "haystack">[]
+)
   .filter((entry, i, all) => all.findIndex((e) => e.href === entry.href) === i)
   .map((entry) => ({ ...entry, haystack: `${entry.title} ${entry.detail} ${entry.keywords ?? ""}`.toLowerCase() }));
 

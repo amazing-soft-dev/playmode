@@ -3,17 +3,61 @@
  * only from friendly words, so a nickname can never spell out a real name or anything offensive.
  */
 const ADJECTIVES = [
-  "Pixel", "Quiet", "Moss", "Lumen", "Volt", "Cloud", "Sunny", "Echo", "Nova", "Tiny", "Retro", "Blue",
-  "Swift", "Brave", "Cosmic", "Lucky", "Mellow", "Neon", "Turbo", "Velvet", "Amber", "Frost", "Golden", "Jolly",
+  "Pixel",
+  "Quiet",
+  "Moss",
+  "Lumen",
+  "Volt",
+  "Cloud",
+  "Sunny",
+  "Echo",
+  "Nova",
+  "Tiny",
+  "Retro",
+  "Blue",
+  "Swift",
+  "Brave",
+  "Cosmic",
+  "Lucky",
+  "Mellow",
+  "Neon",
+  "Turbo",
+  "Velvet",
+  "Amber",
+  "Frost",
+  "Golden",
+  "Jolly",
 ];
 const NOUNS = [
-  "Otter", "Fox", "Byte", "Kite", "Wren", "Pine", "Glitch", "Atlas", "Badger", "Comet", "Heron", "Mango",
-  "Panda", "Falcon", "Maple", "Rocket", "Pebble", "Lynx", "Koala", "Orbit", "Cactus", "Tiger", "Raven", "Sprout",
+  "Otter",
+  "Fox",
+  "Byte",
+  "Kite",
+  "Wren",
+  "Pine",
+  "Glitch",
+  "Atlas",
+  "Badger",
+  "Comet",
+  "Heron",
+  "Mango",
+  "Panda",
+  "Falcon",
+  "Maple",
+  "Rocket",
+  "Pebble",
+  "Lynx",
+  "Koala",
+  "Orbit",
+  "Cactus",
+  "Tiger",
+  "Raven",
+  "Sprout",
 ];
 
 /** A nickname like "NovaBadger21". Pass a random source for deterministic output in tests. */
 export function generateNickname(random: () => number = Math.random): string {
-  const pick = <T,>(list: readonly T[]) => list[Math.floor(random() * list.length)]!;
+  const pick = <T>(list: readonly T[]) => list[Math.floor(random() * list.length)]!;
   const digits = String(Math.floor(random() * 90) + 10);
   return `${pick(ADJECTIVES)}${pick(NOUNS)}${digits}`;
 }

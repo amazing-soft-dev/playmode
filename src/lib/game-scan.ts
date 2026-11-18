@@ -41,8 +41,16 @@ interface Check {
 const CHECKS: Check[] = [
   // Any absolute or protocol-relative URL, including in comments: games must not reference the network.
   { rule: "external-url", pattern: /\b(?:https?|wss?|ftp):\/\//i, message: "Contains an external URL" },
-  { rule: "external-url", pattern: /(?:src|href|action|data|poster)\s*=\s*["']?\s*\/\//i, message: "Contains a protocol-relative URL" },
-  { rule: "external-url", pattern: /url\(\s*["']?\s*(?:https?:)?\/\//i, message: "Loads a CSS resource from another site" },
+  {
+    rule: "external-url",
+    pattern: /(?:src|href|action|data|poster)\s*=\s*["']?\s*\/\//i,
+    message: "Contains a protocol-relative URL",
+  },
+  {
+    rule: "external-url",
+    pattern: /url\(\s*["']?\s*(?:https?:)?\/\//i,
+    message: "Loads a CSS resource from another site",
+  },
   { rule: "network-api", pattern: /\bfetch\s*\(/, message: "Uses fetch()" },
   { rule: "network-api", pattern: /\bXMLHttpRequest\b/, message: "Uses XMLHttpRequest" },
   { rule: "network-api", pattern: /\bWebSocket\b/, message: "Uses WebSocket" },
@@ -56,7 +64,11 @@ const CHECKS: Check[] = [
   { rule: "dynamic-code", pattern: /\beval\s*\(/, message: "Uses eval()" },
   { rule: "dynamic-code", pattern: /\bnew\s+Function\s*\(/, message: "Uses new Function()" },
   { rule: "dynamic-code", pattern: /\bimport\s*\(/, message: "Uses dynamic import()" },
-  { rule: "dynamic-code", pattern: /\bset(?:Timeout|Interval)\s*\(\s*["'`]/, message: "Passes a string to setTimeout or setInterval" },
+  {
+    rule: "dynamic-code",
+    pattern: /\bset(?:Timeout|Interval)\s*\(\s*["'`]/,
+    message: "Passes a string to setTimeout or setInterval",
+  },
   { rule: "dynamic-code", pattern: /\bnew\s+(?:Shared)?Worker\s*\(/, message: "Starts a worker" },
   { rule: "navigation", pattern: /\b(?:top|parent|opener)\s*\.\s*location\b/, message: "Navigates the host page" },
   { rule: "navigation", pattern: /\bwindow\s*\.\s*open\s*\(/, message: "Opens a window" },
@@ -64,7 +76,11 @@ const CHECKS: Check[] = [
   { rule: "navigation", pattern: /<meta[^>]+http-equiv\s*=\s*["']?refresh/i, message: "Uses a meta refresh" },
   { rule: "embedding", pattern: /<(?:iframe|frame|object|embed|portal)\b/i, message: "Embeds another document" },
   { rule: "forbidden-tag", pattern: /<script[^>]+\bsrc\s*=/i, message: "Loads an external script" },
-  { rule: "forbidden-tag", pattern: /<link\b[^>]*\brel\s*=\s*["']?(?:stylesheet|preload|prefetch|modulepreload|import)/i, message: "Loads an external stylesheet or resource" },
+  {
+    rule: "forbidden-tag",
+    pattern: /<link\b[^>]*\brel\s*=\s*["']?(?:stylesheet|preload|prefetch|modulepreload|import)/i,
+    message: "Loads an external stylesheet or resource",
+  },
   { rule: "forbidden-tag", pattern: /<base\b/i, message: "Sets a base URL" },
   { rule: "forbidden-tag", pattern: /<form\b/i, message: "Contains a form" },
 ];
@@ -83,7 +99,10 @@ export function scanGameHtml(html: string, maxBytes: number = POLICY.gameMaxByte
   const issues: ScanIssue[] = [];
 
   if (sizeBytes > maxBytes) {
-    issues.push({ rule: "size", message: `File is ${Math.ceil(sizeBytes / 1024)} KB; the limit is ${Math.floor(maxBytes / 1024)} KB` });
+    issues.push({
+      rule: "size",
+      message: `File is ${Math.ceil(sizeBytes / 1024)} KB; the limit is ${Math.floor(maxBytes / 1024)} KB`,
+    });
   }
   if (!/<html[\s>]/i.test(html) || !/<\/html>/i.test(html)) {
     issues.push({ rule: "not-html", message: "Not a complete HTML document" });

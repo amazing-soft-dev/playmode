@@ -1,0 +1,18 @@
+# Build output and dependencies
+.next/
+out/
+node_modules/
+package-lock.json
+next-env.d.ts
+
+# Local research data
+.research/
+
+# Generated responsive images
+public/media/_variants/
+
+# Self-contained sample games: kept exactly as written (the scanner tests read them)
+public/games/
+
+# Hostile-game probe fixture
+docs/security/sandbox-probe.html

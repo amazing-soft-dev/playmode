@@ -21,5 +21,11 @@ export function applyAudience(filters: RecommendationFilters, band: AgeBand | "u
 /** Stable key for the 24-hour results cache (identical filters share one catalog query). */
 export function filterKey(filters: RecommendationFilters): string {
   const sorted = (list: string[]) => [...list].sort().join(",");
-  return [sorted(filters.genres), sorted(filters.platforms), filters.price, filters.ratingCeiling, sorted(filters.keywords)].join("|");
+  return [
+    sorted(filters.genres),
+    sorted(filters.platforms),
+    filters.price,
+    filters.ratingCeiling,
+    sorted(filters.keywords),
+  ].join("|");
 }

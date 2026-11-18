@@ -35,7 +35,10 @@ export function createMockAuth(store: KeyValueStore = memoryStore(), now: () => 
       if (!decision.ok) throw new AgeGateError(decision.reason);
       const ageBand = decision.band;
       const profile: Profile = {
-        id: `u-${email.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+        id: `u-${email
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")}`,
         // Under-18 accounts always show a generated nickname instead of a chosen name.
         displayName: ageBand === "adult" ? displayName.trim().slice(0, 24) : generateNickname(),
         nicknameGenerated: ageBand !== "adult",

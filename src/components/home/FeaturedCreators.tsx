@@ -34,7 +34,12 @@ export function FeaturedCreators() {
                 <Card interactive className="h-full">
                   <Link href={pick ? `/play/${pick.id}` : "/gallery"} className="flex h-full flex-col">
                     <span className="relative block aspect-[4/5] overflow-hidden">
-                      <Media id={photos[creator.photo]} alt="" sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw" zoomOnHover />
+                      <Media
+                        id={photos[creator.photo]}
+                        alt=""
+                        sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
+                        zoomOnHover
+                      />
                     </span>
                     <span className="flex flex-col gap-2 p-5">
                       <span className="font-sans text-[20px] font-medium tracking-[-0.5px] uppercase transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">

@@ -19,7 +19,12 @@ export function Countdown({ className }: { className?: string }) {
   }, []);
 
   return (
-    <time className={className} suppressHydrationWarning aria-live="off" dateTime={ms === null ? undefined : `PT${Math.floor(ms / 1000)}S`}>
+    <time
+      className={className}
+      suppressHydrationWarning
+      aria-live="off"
+      dateTime={ms === null ? undefined : `PT${Math.floor(ms / 1000)}S`}
+    >
       {ms === null ? "--:--:--" : formatCountdown(ms)}
     </time>
   );

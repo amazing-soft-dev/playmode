@@ -47,7 +47,11 @@ const nextConfig: NextConfig = {
             { source: "/:path*", headers: [...COMMON_HEADERS, { key: "Content-Security-Policy", value: SITE_CSP }] },
             {
               source: "/games/:path*",
-              headers: [...COMMON_HEADERS, { key: "Content-Security-Policy", value: gameCsp(origin) }, { key: "X-Frame-Options", value: "SAMEORIGIN" }],
+              headers: [
+                ...COMMON_HEADERS,
+                { key: "Content-Security-Policy", value: gameCsp(origin) },
+                { key: "X-Frame-Options", value: "SAMEORIGIN" },
+              ],
             },
           ];
         },

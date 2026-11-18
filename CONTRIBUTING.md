@@ -40,11 +40,11 @@ so GitHub will close issues: it collects issue numbers from branch names (`feat/
 **CI** (`.github/workflows/ci.yml`) runs on every pull request, on every push to `dev` or `main`, and
 on manual dispatch. A newer push to the same branch or pull request cancels the older run.
 
-| Job | What it does |
-| --- | --- |
-| Lint and type check | `npm ci`, then `npm run lint`, `npm run typecheck`, `npm run check:images` (each photo used once) and `npm test` |
+| Job                       | What it does                                                                                                                                                                                                                                                |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lint and type check       | `npm ci`, then `npm run lint`, `npm run typecheck`, `npm run check:images` (each photo used once) and `npm test`                                                                                                                                            |
 | Build (server and static) | Two builds in parallel. **server** is the full app with `/api` routes. **static** sets `NEXT_OUTPUT=export`, builds responsive WebP images, and checks that `out/` has the expected HTML, sitemap, icons and image files, and that `out/api` does not exist |
-| CI passed | The single status check the branch rules require. It fails unless both jobs succeeded. On a pull request it posts or updates one summary comment |
+| CI passed                 | The single status check the branch rules require. It fails unless both jobs succeeded. On a pull request it posts or updates one summary comment                                                                                                            |
 
 **Merge passing pull request** (`.github/workflows/merge-passing-pr.yml`) starts only after CI
 finishes successfully on a pull request. It merge-commits the pull request if the head is still the
@@ -72,6 +72,7 @@ GitHub does not read `.github/rulesets/` on its own. After editing a ruleset fil
 ## Before you push
 
 ```bash
+npm run format
 npm run lint
 npm run typecheck
 npm test

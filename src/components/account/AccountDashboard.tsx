@@ -79,7 +79,12 @@ export function AccountDashboard() {
         <Card className="flex flex-col gap-3 p-6">
           <BracketLabel>Daily streak</BracketLabel>
           <p className="type-stat font-semibold">{streak ? streak.current : "—"}</p>
-          <p className="type-small text-ash">Best {streak?.best ?? 0} · <Link href="/daily" className="hover:text-accent">Play today</Link></p>
+          <p className="type-small text-ash">
+            Best {streak?.best ?? 0} ·{" "}
+            <Link href="/daily" className="hover:text-accent">
+              Play today
+            </Link>
+          </p>
         </Card>
       </div>
 
@@ -104,7 +109,9 @@ export function AccountDashboard() {
                     <span className="flex flex-col gap-3 p-5">
                       <span className="type-h4 text-[20px] group-hover/card:text-accent">{game.title}</span>
                       <span className="flex flex-wrap gap-2">
-                        <Tag className={game.status === "published" ? "border-accent text-accent" : ""}>{STATUS_LABEL[game.status]}</Tag>
+                        <Tag className={game.status === "published" ? "border-accent text-accent" : ""}>
+                          {STATUS_LABEL[game.status]}
+                        </Tag>
                         <Tag>{game.likeCount} likes</Tag>
                       </span>
                     </span>

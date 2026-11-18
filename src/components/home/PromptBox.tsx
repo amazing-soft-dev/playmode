@@ -20,11 +20,11 @@ export function PromptBox() {
           maxLength={POLICY.promptMaxChars}
           placeholder={home.hero.promptPlaceholder}
           autoComplete="off"
-          className="type-body h-12 min-w-0 flex-1 bg-transparent px-4 text-paper placeholder:text-ash focus:outline-none"
+          className="h-12 min-w-0 flex-1 bg-transparent px-4 type-body text-paper placeholder:text-ash focus:outline-none"
         />
         <button
           type="submit"
-          className="type-caps flex shrink-0 items-center gap-2 bg-accent px-4 text-accent-ink transition-colors duration-300 hover:bg-paper"
+          className="flex shrink-0 items-center gap-2 bg-accent px-4 type-caps text-accent-ink transition-colors duration-300 hover:bg-paper"
         >
           {home.hero.promptCta}
           <ArrowIcon className="size-4" />

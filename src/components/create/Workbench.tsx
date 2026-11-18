@@ -140,7 +140,11 @@ export function Workbench({ game, profile, errors, onReplace, onBuildUsed }: Wor
   };
 
   const download = (kind: "html" | "zip") => {
-    const info = { title: game.prompt.slice(0, 60), creator: profile.displayName, license: "all-rights-reserved" as License };
+    const info = {
+      title: game.prompt.slice(0, 60),
+      creator: profile.displayName,
+      license: "all-rights-reserved" as License,
+    };
     const name = slugify(info.title);
     if (kind === "html") saveFile(`${name}.html`, withLicenseHeader(game.html, info), "text/html");
     else saveFile(`${name}.zip`, buildZip(game.html, info), "application/zip");
@@ -224,16 +228,27 @@ export function Workbench({ game, profile, errors, onReplace, onBuildUsed }: Wor
           <Button onClick={() => setPublishOpen((v) => !v)} disabled={busy !== null}>
             Publish to gallery
           </Button>
-          <button type="button" onClick={() => download("html")} className="type-caps inline-flex items-center gap-2 px-3 hover:text-accent">
+          <button
+            type="button"
+            onClick={() => download("html")}
+            className="inline-flex items-center gap-2 px-3 type-caps hover:text-accent"
+          >
             <DownloadIcon className="size-4" /> HTML
           </button>
-          <button type="button" onClick={() => download("zip")} className="type-caps inline-flex items-center gap-2 px-3 hover:text-accent">
+          <button
+            type="button"
+            onClick={() => download("zip")}
+            className="inline-flex items-center gap-2 px-3 type-caps hover:text-accent"
+          >
             <DownloadIcon className="size-4" /> itch.io zip
           </button>
         </div>
         {publishedId && (
           <p role="status" className="type-small text-accent">
-            Published! <Link href={playHref({ id: publishedId })} className="underline underline-offset-4">Open the game page</Link>
+            Published!{" "}
+            <Link href={playHref({ id: publishedId })} className="underline underline-offset-4">
+              Open the game page
+            </Link>
           </p>
         )}
         {note && (
@@ -245,9 +260,13 @@ export function Workbench({ game, profile, errors, onReplace, onBuildUsed }: Wor
 
       {publishOpen && (
         <form onSubmit={publish} className="grid gap-5 border border-line p-6 md:grid-cols-2">
-          <Field label="Title">{({ id }) => <Input id={id} name="title" required maxLength={60} defaultValue={game.prompt.slice(0, 40)} />}</Field>
+          <Field label="Title">
+            {({ id }) => <Input id={id} name="title" required maxLength={60} defaultValue={game.prompt.slice(0, 40)} />}
+          </Field>
           <Field label="Tags" hint="Up to 5, separated by commas">
-            {({ id, describedBy }) => <Input id={id} aria-describedby={describedBy} name="tags" defaultValue={game.template} maxLength={80} />}
+            {({ id, describedBy }) => (
+              <Input id={id} aria-describedby={describedBy} name="tags" defaultValue={game.template} maxLength={80} />
+            )}
           </Field>
           <Field label="Short description" className="md:col-span-2">
             {({ id }) => <Textarea id={id} name="description" required maxLength={160} rows={2} />}
@@ -280,11 +299,11 @@ export function Workbench({ game, profile, errors, onReplace, onBuildUsed }: Wor
           <p className="type-label text-fog">Versions (last {POLICY.versionsKept})</p>
           <ol className="flex flex-col border-t border-line">
             {versions.map((v, i) => (
-              <li key={v.id} className="type-small flex items-center justify-between gap-4 border-b border-line py-3">
+              <li key={v.id} className="flex items-center justify-between gap-4 border-b border-line py-3 type-small">
                 <span className="line-clamp-1 text-fog">
                   <span className="text-ash">v{versions.length - i}</span> {v.prompt}
                 </span>
-                <button type="button" onClick={() => restore(v)} className="type-label shrink-0 hover:text-accent">
+                <button type="button" onClick={() => restore(v)} className="shrink-0 type-label hover:text-accent">
                   Open
                 </button>
               </li>
