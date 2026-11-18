@@ -16,14 +16,14 @@ export function StatsSection() {
           <SectionHeading label={heading.label}>{heading.title}</SectionHeading>
         </Reveal>
         <div className="relative border border-line bg-ink/40 bg-[linear-gradient(180deg,rgba(9,9,21,0.2)_0%,#000_100%)]">
-          <ul className="flex flex-wrap justify-center gap-x-[60px] gap-y-10 px-5 py-[30px] md:justify-between md:gap-[30px] md:px-[30px] lg:flex-nowrap lg:gap-10 lg:px-[50px]">
+          <ul className="flex flex-wrap justify-center gap-x-[60px] gap-y-10 px-5 py-[30px] md:flex-nowrap md:justify-between md:gap-[30px] md:px-[30px] lg:gap-10 lg:px-[50px]">
             {items.map((stat, i) => (
               <Reveal
                 as="li"
                 key={stat.label}
                 index={i}
                 duration={0.7}
-                className="flex w-[250px] flex-col gap-[15px] lg:w-auto lg:flex-1"
+                className="flex w-[250px] flex-col gap-[15px] md:w-auto md:flex-1"
               >
                 <div className="flex items-start gap-2">
                   <CountUp
