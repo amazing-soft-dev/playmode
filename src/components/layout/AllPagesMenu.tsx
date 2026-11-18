@@ -55,7 +55,7 @@ export function AllPagesMenu() {
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "group/all type-nav inline-flex items-center gap-1.5 transition-colors duration-[400ms] ease-snap hover:text-accent",
+          "group/all inline-flex items-center gap-1.5 type-nav transition-colors duration-[400ms] ease-snap hover:text-accent",
           open && "text-accent",
         )}
       >

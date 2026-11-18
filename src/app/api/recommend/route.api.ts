@@ -11,7 +11,10 @@ export const runtime = "nodejs";
 const bodySchema = z.object({
   text: z.string().max(300).default(""),
   price: z.enum(["any", "free", "paid"]).default("any"),
-  platforms: z.array(z.enum(["pc", "mobile", "browser", "console"])).max(4).default([]),
+  platforms: z
+    .array(z.enum(["pc", "mobile", "browser", "console"]))
+    .max(4)
+    .default([]),
   genres: z.array(z.string().max(30)).max(10).default([]),
 });
 
@@ -25,7 +28,11 @@ const limiter = createRateLimiter({ limit: POLICY.recommendPerHourAnonymous, win
  */
 export async function POST(request: Request) {
   const limit = limiter(clientIp(request));
-  if (!limit.ok) return Response.json({ error: "Too many requests. Try again in a little while." }, { status: 429, headers: { "retry-after": String(limit.retryAfter) } });
+  if (!limit.ok)
+    return Response.json(
+      { error: "Too many requests. Try again in a little while." },
+      { status: 429, headers: { "retry-after": String(limit.retryAfter) } },
+    );
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "We couldn't read that request." }, { status: 400 });

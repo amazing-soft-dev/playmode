@@ -9,7 +9,10 @@ import type { AiProvider, BillingProvider, CatalogProvider, GenerateResult, Plan
  */
 export function createMockAi(loadTemplate: (template: TemplateId) => Promise<string>): AiProvider {
   const stamp = (html: string, note: string): GenerateResult => ({
-    html: html.replace(/<html([^>]*)>/i, `<html$1>\n<!-- playermode:mock ${note.replace(/--/g, "-").slice(0, 200)} -->`),
+    html: html.replace(
+      /<html([^>]*)>/i,
+      `<html$1>\n<!-- playermode:mock ${note.replace(/--/g, "-").slice(0, 200)} -->`,
+    ),
     model: "mock-generator",
     tokensIn: 0,
     tokensOut: 0,
@@ -101,12 +104,7 @@ export const PLAN_OFFERS: PlanOffer[] = [
     // Placeholder until beta measures the real cost per build (plan section 09).
     priceMonthlyUsd: 8,
     dailyBuilds: POLICY.dailyBuilds.plus,
-    features: [
-      `${POLICY.dailyBuilds.plus} AI builds a day`,
-      "Bigger games",
-      "No ads",
-      "itch.io-ready zip downloads",
-    ],
+    features: [`${POLICY.dailyBuilds.plus} AI builds a day`, "Bigger games", "No ads", "itch.io-ready zip downloads"],
   },
 ];
 

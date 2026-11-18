@@ -24,7 +24,7 @@ export function Accordion({ items, name, className }: { items: AccordionItem[]; 
             <span className="type-h4 text-balance-safe">{item.question}</span>
             <PlusIcon className="size-6 shrink-0 transition-transform duration-300 ease-snap group-open/acc:rotate-45 group-open/acc:text-accent" />
           </summary>
-          <div className="type-body max-w-3xl pb-8 text-fog">{item.answer}</div>
+          <div className="max-w-3xl pb-8 type-body text-fog">{item.answer}</div>
         </details>
       ))}
     </div>

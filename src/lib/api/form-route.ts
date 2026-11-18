@@ -17,7 +17,11 @@ export function clientIp(request: Request): string {
 export const fields = {
   name: z.string().trim().min(1, "Please tell us your name.").max(80, "That name is too long."),
   email: z.string().trim().email("Please enter a valid email address.").max(120),
-  message: z.string().trim().min(10, "Please write a little more (10 characters or more).").max(2000, "Please keep it under 2,000 characters."),
+  message: z
+    .string()
+    .trim()
+    .min(10, "Please write a little more (10 characters or more).")
+    .max(2000, "Please keep it under 2,000 characters."),
 };
 
 interface FormRouteOptions<T> {
@@ -38,7 +42,11 @@ export function formRoute<T>({ schema, limiter, handle }: FormRouteOptions<T>) {
     }
     const limit = limiter(clientIp(request));
     if (!limit.ok) {
-      return json(429, { error: "Too many messages. Please wait a few minutes and try again." }, { "retry-after": String(limit.retryAfter) });
+      return json(
+        429,
+        { error: "Too many messages. Please wait a few minutes and try again." },
+        { "retry-after": String(limit.retryAfter) },
+      );
     }
     const raw = await request.text();
     if (raw.length > MAX_BODY_BYTES) return json(413, { error: "That message is too long." });
@@ -48,7 +56,11 @@ export function formRoute<T>({ schema, limiter, handle }: FormRouteOptions<T>) {
     } catch {
       return json(400, { error: "We couldn't read that form. Please try again." });
     }
-    if (typeof body === "object" && body !== null && String((body as Record<string, unknown>).company_website ?? "").trim() !== "") {
+    if (
+      typeof body === "object" &&
+      body !== null &&
+      String((body as Record<string, unknown>).company_website ?? "").trim() !== ""
+    ) {
       return json(200, { ok: true });
     }
     const parsed = schema.safeParse(body);

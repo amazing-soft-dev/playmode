@@ -55,7 +55,10 @@ export function MobileMenu() {
     const q = query.trim().toLowerCase();
     if (!q) return allPages;
     return allPages
-      .map((g) => ({ ...g, links: g.links.filter((l) => `${l.label} ${l.description ?? ""}`.toLowerCase().includes(q)) }))
+      .map((g) => ({
+        ...g,
+        links: g.links.filter((l) => `${l.label} ${l.description ?? ""}`.toLowerCase().includes(q)),
+      }))
       .filter((g) => g.links.length > 0);
   }, [query]);
 
@@ -99,7 +102,7 @@ export function MobileMenu() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Type to filter"
-                  className="type-body h-11 border-b border-line bg-transparent text-paper placeholder:text-ash focus:border-accent focus:outline-none"
+                  className="h-11 border-b border-line bg-transparent type-body text-paper placeholder:text-ash focus:border-accent focus:outline-none"
                 />
               </label>
               {groups.length === 0 && <p className="text-fog">No page matches “{query}”.</p>}

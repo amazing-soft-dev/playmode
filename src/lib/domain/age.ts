@@ -9,8 +9,36 @@ import type { AgeBand } from "./types.ts";
 
 /** EEA member states (EU 27 plus Iceland, Liechtenstein and Norway), ISO 3166-1 alpha-2. */
 export const EEA_COUNTRIES = new Set([
-  "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV",
-  "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "IS", "LI", "NO",
+  "AT",
+  "BE",
+  "BG",
+  "HR",
+  "CY",
+  "CZ",
+  "DK",
+  "EE",
+  "FI",
+  "FR",
+  "DE",
+  "GR",
+  "HU",
+  "IE",
+  "IT",
+  "LV",
+  "LT",
+  "LU",
+  "MT",
+  "NL",
+  "PL",
+  "PT",
+  "RO",
+  "SK",
+  "SI",
+  "ES",
+  "SE",
+  "IS",
+  "LI",
+  "NO",
 ]);
 
 export function minimumAge(birthYear: number, now: number = Date.now()): number {
@@ -25,16 +53,17 @@ export function ageBandFor(birthYear: number, now: number = Date.now()): AgeBand
 }
 
 export type AccountDecision =
-  | { ok: true; band: Exclude<AgeBand, "under13"> }
-  | { ok: false; reason: "under-13" | "eea-under-16" | "invalid-year" };
+  { ok: true; band: Exclude<AgeBand, "under13"> } | { ok: false; reason: "under-13" | "eea-under-16" | "invalid-year" };
 
 /** Whether an account may be created. Under-13s play without an account in V1. */
 export function accountDecision(birthYear: number, country: string, now: number = Date.now()): AccountDecision {
   const year = new Date(now).getUTCFullYear();
-  if (!Number.isInteger(birthYear) || birthYear < year - 120 || birthYear > year) return { ok: false, reason: "invalid-year" };
+  if (!Number.isInteger(birthYear) || birthYear < year - 120 || birthYear > year)
+    return { ok: false, reason: "invalid-year" };
   const age = minimumAge(birthYear, now);
   if (age < POLICY.minAccountAge) return { ok: false, reason: "under-13" };
-  if (EEA_COUNTRIES.has(country.toUpperCase()) && age < POLICY.minAccountAgeEea) return { ok: false, reason: "eea-under-16" };
+  if (EEA_COUNTRIES.has(country.toUpperCase()) && age < POLICY.minAccountAgeEea)
+    return { ok: false, reason: "eea-under-16" };
   const band = ageBandFor(birthYear, now);
   return { ok: true, band: band === "adult" ? "adult" : "13to17" };
 }

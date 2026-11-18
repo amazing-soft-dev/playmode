@@ -26,7 +26,10 @@ interface BaseProps {
   children: ReactNode;
 }
 
-type AsLink = BaseProps & { href: string; external?: boolean } & Omit<ComponentPropsWithoutRef<"a">, "href" | "className" | "children">;
+type AsLink = BaseProps & { href: string; external?: boolean } & Omit<
+    ComponentPropsWithoutRef<"a">,
+    "href" | "className" | "children"
+  >;
 type AsButton = BaseProps & { href?: undefined } & Omit<ComponentPropsWithoutRef<"button">, "className" | "children">;
 
 export type ButtonProps = AsLink | AsButton;
@@ -42,7 +45,12 @@ function framed(variant: ButtonVariant, block: boolean, className?: string) {
   );
 }
 
-function Inner({ variant, arrow, block, children }: Required<Pick<BaseProps, "variant" | "arrow" | "block">> & { children: ReactNode }) {
+function Inner({
+  variant,
+  arrow,
+  block,
+  children,
+}: Required<Pick<BaseProps, "variant" | "arrow" | "block">> & { children: ReactNode }) {
   if (variant === "solid" || variant === "link") return <>{children}</>;
   // Corner ticks on the left and right edges: 8px at rest, growing to half the height on hover.
   const tick =
@@ -56,7 +64,7 @@ function Inner({ variant, arrow, block, children }: Required<Pick<BaseProps, "va
       <span
         className={cn(
           // min-w-0 + truncate: a long label shrinks to fit narrow screens instead of overflowing.
-          "type-body flex min-w-0 items-center truncate px-5 tracking-[0.03em] whitespace-nowrap sm:min-w-48",
+          "flex min-w-0 items-center truncate px-5 type-body tracking-[0.03em] whitespace-nowrap sm:min-w-48",
           arrow && "border-r border-current",
           block && "flex-1",
         )}
@@ -86,7 +94,11 @@ const LINK =
 export function Button(props: ButtonProps) {
   const { variant = "primary", arrow = true, block = false, className, children } = props;
   const classes =
-    variant === "solid" ? cn(SOLID, block && "w-full", className) : variant === "link" ? cn(LINK, className) : framed(variant, block, className);
+    variant === "solid"
+      ? cn(SOLID, block && "w-full", className)
+      : variant === "link"
+        ? cn(LINK, className)
+        : framed(variant, block, className);
   const content = (
     <Inner variant={variant} arrow={arrow} block={block}>
       {children}

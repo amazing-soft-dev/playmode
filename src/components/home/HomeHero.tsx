@@ -27,7 +27,7 @@ export function HomeHero() {
           <div className="rise-600 motion-reduce:animate-none lg:max-w-[640px]">
             <h1 className="type-hero tracking-[-0.04em] text-balance-safe">{hero.title}</h1>
           </div>
-          <div className="rise-700 flex w-full max-w-[400px] flex-col gap-8 motion-reduce:animate-none">
+          <div className="flex w-full max-w-[400px] rise-700 flex-col gap-8 motion-reduce:animate-none">
             <p className="type-body text-fog">{hero.lead}</p>
             <PromptBox />
             <div className="flex flex-wrap items-center justify-center gap-4 lg:justify-start">

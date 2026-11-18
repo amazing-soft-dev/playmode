@@ -19,7 +19,13 @@ export default async function PricingPage() {
   const offers = await serverRepos.billing.offers();
   return (
     <>
-      <PageBanner photo={photos.bannerPricing} label={pricing.label} title={pricing.title} lead={pricing.lead} compact />
+      <PageBanner
+        photo={photos.bannerPricing}
+        label={pricing.label}
+        title={pricing.title}
+        lead={pricing.lead}
+        compact
+      />
       <Section>
         <div className="container-site flex flex-col gap-10">
           <Suspense>
@@ -30,7 +36,12 @@ export default async function PricingPage() {
       </Section>
       <Section ruled>
         <div className="container-site flex flex-col gap-10">
-          <SectionHeading label="Closed beta" aside={<p className="type-body text-fog">We&apos;re inviting 50 to 100 players to test builds before launch.</p>}>
+          <SectionHeading
+            label="Closed beta"
+            aside={
+              <p className="type-body text-fog">We&apos;re inviting 50 to 100 players to test builds before launch.</p>
+            }
+          >
             Help shape PlayerMode
           </SectionHeading>
           <WaitlistForm />

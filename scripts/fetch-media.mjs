@@ -70,12 +70,23 @@ async function fetchVideo(item) {
   const seconds = String(item.trimSeconds ?? VIDEO_DEFAULT_SECONDS);
   const width = Math.min(item.maxWidth ?? VIDEO_MAX_WIDTH, VIDEO_MAX_WIDTH);
   runFfmpeg([
-    "-i", raw,
-    "-t", seconds,
+    "-i",
+    raw,
+    "-t",
+    seconds,
     "-an",
-    "-vf", `scale='min(${width},iw)':-2,fps=30`,
-    "-c:v", "libx264", "-preset", "slow", "-crf", "28", "-pix_fmt", "yuv420p",
-    "-movflags", "+faststart",
+    "-vf",
+    `scale='min(${width},iw)':-2,fps=30`,
+    "-c:v",
+    "libx264",
+    "-preset",
+    "slow",
+    "-crf",
+    "28",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart",
     item.file,
   ]);
   rmSync(raw, { force: true });
@@ -88,9 +99,7 @@ async function fetchVideo(item) {
     const frame = join(tmpdir(), `playermode-${item.id}-poster.png`);
     runFfmpeg(["-ss", "0.5", "-i", item.file, "-frames:v", "1", frame]);
     mkdirSync(dirname(poster.file), { recursive: true });
-    const info = await sharp(frame)
-      .jpeg({ quality: 78, mozjpeg: true, progressive: true })
-      .toFile(poster.file);
+    const info = await sharp(frame).jpeg({ quality: 78, mozjpeg: true, progressive: true }).toFile(poster.file);
     poster.width = info.width;
     poster.height = info.height;
     rmSync(frame, { force: true });

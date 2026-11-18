@@ -35,13 +35,18 @@ export async function TrendingGames() {
                       </span>
                       <span className="type-small text-fog">{game.description}</span>
                     </span>
-                    <span className="type-label flex items-center gap-3 text-ash">
+                    <span className="flex items-center gap-3 type-label text-ash">
                       by {game.ownerName} · {game.weeklyLikeCount} likes this week
                       <ArrowIcon className="size-4 text-paper transition-transform duration-[400ms] ease-snap group-hover/card:translate-x-1 group-hover/card:text-accent" />
                     </span>
                   </span>
                   <span className="relative block aspect-[16/10] overflow-hidden border border-line">
-                    <GameCover id={game.id} template={game.template} title={game.title} className="transition-transform duration-[600ms] ease-snap group-hover/card:scale-110" />
+                    <GameCover
+                      id={game.id}
+                      template={game.template}
+                      title={game.title}
+                      className="transition-transform duration-[600ms] ease-snap group-hover/card:scale-110"
+                    />
                   </span>
                 </Link>
               </Card>

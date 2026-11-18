@@ -22,9 +22,10 @@ interface ManifestItem extends Omit<MediaItem, "src"> {
   file: string;
 }
 
-const items = (manifest as { items: ManifestItem[] }).items.map(
-  ({ file, ...rest }): MediaItem => ({ ...rest, src: file.replace(/^public/, "") }),
-);
+const items = (manifest as { items: ManifestItem[] }).items.map(({ file, ...rest }): MediaItem => ({
+  ...rest,
+  src: file.replace(/^public/, ""),
+}));
 const byId = new Map(items.map((item) => [item.id, item]));
 
 /** Looks up a photo or video by its manifest id. Throws on unknown ids so typos fail the build. */

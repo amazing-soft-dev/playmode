@@ -67,11 +67,20 @@ export function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-6" noValidate={false}>
       <Field label={login.emailLabel}>
-        {({ id, describedBy }) => <Input id={id} aria-describedby={describedBy} name="email" type="email" autoComplete="email" required />}
+        {({ id, describedBy }) => (
+          <Input id={id} aria-describedby={describedBy} name="email" type="email" autoComplete="email" required />
+        )}
       </Field>
       <Field label={login.nameLabel} hint={login.nameHint}>
         {({ id, describedBy }) => (
-          <Input id={id} aria-describedby={describedBy} name="displayName" maxLength={24} autoComplete="nickname" required />
+          <Input
+            id={id}
+            aria-describedby={describedBy}
+            name="displayName"
+            maxLength={24}
+            autoComplete="nickname"
+            required
+          />
         )}
       </Field>
       <div className="grid gap-6 sm:grid-cols-2">

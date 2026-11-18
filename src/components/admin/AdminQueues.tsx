@@ -71,7 +71,8 @@ export function AdminQueues() {
         <BracketLabel accent>Daily challenges</BracketLabel>
         <h2 className="type-h3">Next 7 days</h2>
         <p className="type-small text-ash">
-          Approve each day before 00:00 UTC. Unapproved days use the approved backlog (at least {POLICY.challengeBacklogMin} entries).
+          Approve each day before 00:00 UTC. Unapproved days use the approved backlog (at least{" "}
+          {POLICY.challengeBacklogMin} entries).
         </p>
         <ul className="flex flex-col border-t border-line">
           {pending.map((c) => (
@@ -86,7 +87,12 @@ export function AdminQueues() {
                 <Tag className="border-accent text-accent">Approved</Tag>
               ) : (
                 <span className="flex items-center gap-4">
-                  <a href={`/games/${c.template}.html`} target="_blank" rel="noopener" className="type-label hover:text-accent">
+                  <a
+                    href={`/games/${c.template}.html`}
+                    target="_blank"
+                    rel="noopener"
+                    className="type-label hover:text-accent"
+                  >
                     Preview
                   </a>
                   <Button variant="secondary" arrow={false} onClick={() => approve(c.date)}>
@@ -103,7 +109,8 @@ export function AdminQueues() {
         <BracketLabel accent>Reports</BracketLabel>
         <h2 className="type-h3">Open queue ({reports.length})</h2>
         <p className="type-small text-ash">
-          Review within {POLICY.reportReviewHours} hours. Games with {POLICY.reportHideThreshold} or more reports are already hidden.
+          Review within {POLICY.reportReviewHours} hours. Games with {POLICY.reportHideThreshold} or more reports are
+          already hidden.
         </p>
         {reports.length === 0 ? (
           <p className="type-body text-fog">No open reports.</p>

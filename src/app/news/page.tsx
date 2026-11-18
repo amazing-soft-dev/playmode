@@ -14,7 +14,12 @@ export const metadata: Metadata = {
 };
 
 const formatDate = (iso: string) =>
-  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 
 /** Devlog list in the template's blog-row layout: text left, photo right, lime on hover. */
 export default function NewsPage() {
@@ -41,7 +46,7 @@ export default function NewsPage() {
                         </span>
                         <span className="type-small text-fog">{post.excerpt}</span>
                       </span>
-                      <span className="type-caps inline-flex items-center gap-2 group-hover/card:text-accent">
+                      <span className="inline-flex items-center gap-2 type-caps group-hover/card:text-accent">
                         Read more <ArrowIcon className="size-4" />
                       </span>
                     </span>

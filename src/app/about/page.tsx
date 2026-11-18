@@ -48,7 +48,9 @@ export default function AboutPage() {
             {about.principles.map((p, i) => (
               <Reveal as="li" key={p.title} index={i}>
                 <Card className="flex h-full flex-col gap-4 p-6">
-                  <span className="font-mono text-[32px] leading-none font-thin text-accent">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="font-mono text-[32px] leading-none font-thin text-accent">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <h3 className="type-h4 text-[22px]">{p.title}</h3>
                   <p className="type-small text-fog">{p.text}</p>
                 </Card>

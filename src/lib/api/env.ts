@@ -14,6 +14,7 @@ export type ServerEnv = z.infer<typeof schema>;
 
 export function serverEnv(source: Record<string, string | undefined> = process.env): ServerEnv {
   const parsed = schema.safeParse(source);
-  if (!parsed.success) throw new Error(`Invalid server environment: ${parsed.error.issues.map((i) => i.path.join(".")).join(", ")}`);
+  if (!parsed.success)
+    throw new Error(`Invalid server environment: ${parsed.error.issues.map((i) => i.path.join(".")).join(", ")}`);
   return parsed.data;
 }

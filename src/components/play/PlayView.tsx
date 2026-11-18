@@ -49,7 +49,10 @@ export function PlayView({ id: routeId }: { id: string }) {
       setGame(g);
       if (!g) return;
       setLikes(g.likeCount);
-      const [version, stored] = await Promise.all([repo.getVersion(g.currentVersionId), repo.getVersionHtml(g.currentVersionId)]);
+      const [version, stored] = await Promise.all([
+        repo.getVersion(g.currentVersionId),
+        repo.getVersionHtml(g.currentVersionId),
+      ]);
       if (!alive) return;
       if (stored) setHtml(stored);
       else if (version) setSrc(version.htmlPath);
@@ -112,9 +115,16 @@ export function PlayView({ id: routeId }: { id: string }) {
   const download = () => {
     const source = html;
     const finish = (text: string) =>
-      saveFile(`${slugify(game.title)}.html`, withLicenseHeader(text, { title: game.title, creator: game.ownerName, license: game.license }), "text/html");
+      saveFile(
+        `${slugify(game.title)}.html`,
+        withLicenseHeader(text, { title: game.title, creator: game.ownerName, license: game.license }),
+        "text/html",
+      );
     if (source) finish(source);
-    else if (src) void fetch(src).then((r) => r.text()).then(finish);
+    else if (src)
+      void fetch(src)
+        .then((r) => r.text())
+        .then(finish);
   };
 
   const share = async () => {
@@ -133,15 +143,22 @@ export function PlayView({ id: routeId }: { id: string }) {
         {hidden ? (
           <div className="flex aspect-video flex-col items-center justify-center gap-3 border border-line bg-panel p-6 text-center">
             <p className="type-h4">Hidden while we review it</p>
-            <p className="type-small max-w-md text-fog">Players reported this game. Our team reviews reports within 48 hours.</p>
+            <p className="max-w-md type-small text-fog">
+              Players reported this game. Our team reviews reports within 48 hours.
+            </p>
           </div>
         ) : html || src ? (
-          <GamePlayer html={html ?? undefined} src={html ? undefined : (src ?? undefined)} title={game.title} aspect={info.aspect} />
+          <GamePlayer
+            html={html ?? undefined}
+            src={html ? undefined : (src ?? undefined)}
+            title={game.title}
+            aspect={info.aspect}
+          />
         ) : (
           <div className="aspect-video border border-line bg-panel" />
         )}
         {notice && (
-          <p role="status" className="type-small border-l-2 border-accent pl-3 text-paper">
+          <p role="status" className="border-l-2 border-accent pl-3 type-small text-paper">
             {notice}
           </p>
         )}
@@ -165,24 +182,38 @@ export function PlayView({ id: routeId }: { id: string }) {
               onClick={like}
               aria-pressed={liked}
               disabled={liked}
-              className={cn("type-caps inline-flex items-center gap-2 transition-colors", liked ? "text-accent" : "hover:text-accent")}
+              className={cn(
+                "inline-flex items-center gap-2 type-caps transition-colors",
+                liked ? "text-accent" : "hover:text-accent",
+              )}
             >
               <HeartIcon filled={liked} className="size-4" /> {likes.toLocaleString("en-US")}
             </button>
           ) : (
-            <Link href={`/login?next=${encodeURIComponent(`/play/${routeId === "local" ? `local?id=${id}` : id}`)}`} className="type-caps inline-flex items-center gap-2 hover:text-accent">
+            <Link
+              href={`/login?next=${encodeURIComponent(`/play/${routeId === "local" ? `local?id=${id}` : id}`)}`}
+              className="inline-flex items-center gap-2 type-caps hover:text-accent"
+            >
               <HeartIcon className="size-4" /> {likes.toLocaleString("en-US")}
             </Link>
           )}
           {game.allowDownload && (
-            <button type="button" onClick={download} className="type-caps inline-flex items-center gap-2 hover:text-accent">
+            <button
+              type="button"
+              onClick={download}
+              className="inline-flex items-center gap-2 type-caps hover:text-accent"
+            >
               <DownloadIcon className="size-4" /> Download
             </button>
           )}
           <button type="button" onClick={share} className="type-caps hover:text-accent">
             Share
           </button>
-          <button type="button" onClick={() => setReportOpen((v) => !v)} className="type-caps ml-auto inline-flex items-center gap-2 text-ash hover:text-accent">
+          <button
+            type="button"
+            onClick={() => setReportOpen((v) => !v)}
+            className="ml-auto inline-flex items-center gap-2 type-caps text-ash hover:text-accent"
+          >
             <FlagIcon className="size-4" /> Report
           </button>
         </div>
@@ -201,7 +232,9 @@ export function PlayView({ id: routeId }: { id: string }) {
               )}
             </Field>
             {profile && (
-              <Field label="Details (optional)">{({ id: fieldId }) => <Textarea id={fieldId} name="details" maxLength={500} rows={3} />}</Field>
+              <Field label="Details (optional)">
+                {({ id: fieldId }) => <Textarea id={fieldId} name="details" maxLength={500} rows={3} />}
+              </Field>
             )}
             <Button type="submit" variant="secondary" arrow={false}>
               Send report
@@ -209,7 +242,7 @@ export function PlayView({ id: routeId }: { id: string }) {
           </form>
         )}
 
-        <dl className="type-small grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-fog">
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 type-small text-fog">
           <dt className="text-ash">License</dt>
           <dd>{LICENSE_NAMES[game.license]}</dd>
           <dt className="text-ash">Plays</dt>

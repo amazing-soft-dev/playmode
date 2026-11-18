@@ -51,15 +51,18 @@ for (const item of items) {
   ids.add(item.id);
 
   if (!["photo", "video", "poster"].includes(item.kind)) fail(`${label}: unknown kind "${item.kind}"`);
-  if (typeof item.file !== "string" || !item.file.startsWith(`${MEDIA_DIR}/`)) fail(`${label}: file must be under ${MEDIA_DIR}/`);
+  if (typeof item.file !== "string" || !item.file.startsWith(`${MEDIA_DIR}/`))
+    fail(`${label}: file must be under ${MEDIA_DIR}/`);
 
   if (item.kind === "poster") {
-    if (!items.some((v) => v.kind === "video" && v.id === item.posterOf)) fail(`${label}: posterOf must name a listed video`);
+    if (!items.some((v) => v.kind === "video" && v.id === item.posterOf))
+      fail(`${label}: posterOf must name a listed video`);
   } else {
     const expected = LICENSE_BY_SOURCE[item.source];
     if (!expected) fail(`${label}: source must be unsplash or pexels`);
     else if (item.license !== expected) fail(`${label}: license must be "${expected}" for ${item.source}`);
-    if (!String(item.sourceUrl).includes(`${item.source}.com/`)) fail(`${label}: sourceUrl must point at ${item.source}.com`);
+    if (!String(item.sourceUrl).includes(`${item.source}.com/`))
+      fail(`${label}: sourceUrl must point at ${item.source}.com`);
     if (!item.author) fail(`${label}: author is required for credits`);
     if (item.kind === "photo" && !item.alt) fail(`${label}: photos need alt text`);
   }
@@ -70,7 +73,8 @@ for (const item of items) {
     } else {
       const kb = statSync(item.file).size / 1024;
       const budget = BUDGET_KB[item.kind];
-      if (budget && kb > budget) fail(`${label}: ${Math.round(kb)} KB is over the ${budget} KB budget for a ${item.kind}`);
+      if (budget && kb > budget)
+        fail(`${label}: ${Math.round(kb)} KB is over the ${budget} KB budget for a ${item.kind}`);
     }
   }
 }

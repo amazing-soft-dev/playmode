@@ -74,7 +74,12 @@ const jsonLd = {
       url: seo.siteUrl,
       description: seo.description,
     },
-    { "@type": "Organization", name: brand.name, url: seo.siteUrl, logo: `${seo.siteUrl}/icons/light/android-chrome-512x512.png` },
+    {
+      "@type": "Organization",
+      name: brand.name,
+      url: seo.siteUrl,
+      logo: `${seo.siteUrl}/icons/light/android-chrome-512x512.png`,
+    },
   ],
 };
 

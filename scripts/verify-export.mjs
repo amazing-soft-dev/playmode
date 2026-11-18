@@ -61,8 +61,7 @@ if (existsSync("media/manifest.json")) {
 
 const countHtml = (dir) =>
   readdirSync(dir, { withFileTypes: true }).reduce(
-    (n, entry) =>
-      n + (entry.isDirectory() ? countHtml(join(dir, entry.name)) : entry.name.endsWith(".html") ? 1 : 0),
+    (n, entry) => n + (entry.isDirectory() ? countHtml(join(dir, entry.name)) : entry.name.endsWith(".html") ? 1 : 0),
     0,
   );
 

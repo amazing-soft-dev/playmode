@@ -69,14 +69,20 @@ export function DailyTemplates() {
               <Card interactive className="h-full">
                 <Link href={`/create?template=${t.id}`} className="flex h-full flex-col">
                   <span className="relative block aspect-[4/3] overflow-hidden">
-                    <Media id={photos[TEMPLATE_PHOTO[t.id]]} sizes="(min-width: 1280px) 20vw, (min-width: 768px) 50vw, 100vw" zoomOnHover />
+                    <Media
+                      id={photos[TEMPLATE_PHOTO[t.id]]}
+                      sizes="(min-width: 1280px) 20vw, (min-width: 768px) 50vw, 100vw"
+                      zoomOnHover
+                    />
                   </span>
                   <span className="flex flex-1 flex-col gap-4 p-5">
                     <BracketLabel as="span">{t.genre}</BracketLabel>
-                    <span className="type-h4 transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">{t.sampleTitle}</span>
+                    <span className="type-h4 transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
+                      {t.sampleTitle}
+                    </span>
                     <span className="font-mono text-[12px] leading-[1.2] text-ash uppercase">{t.controls}</span>
-                    <span className="type-small flex-1 text-fog">{t.summary}</span>
-                    <span className="type-caps inline-flex items-center gap-2 transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
+                    <span className="flex-1 type-small text-fog">{t.summary}</span>
+                    <span className="inline-flex items-center gap-2 type-caps transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
                       Use this template
                       <ArrowIcon className="size-4 transition-transform duration-[400ms] ease-snap group-hover/card:translate-x-1" />
                     </span>

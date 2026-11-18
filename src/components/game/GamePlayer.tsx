@@ -34,7 +34,16 @@ const ASPECT = { video: "aspect-video", portrait: "aspect-[9/16] max-h-[80vh]", 
  * - Stop unloads the frame, which also ends an infinite loop.
  * Production serves game files from a separate domain with a strict CSP as well.
  */
-export function GamePlayer({ html, src, title, onScore, onError, onReady, className, aspect = "video" }: GamePlayerProps) {
+export function GamePlayer({
+  html,
+  src,
+  title,
+  onScore,
+  onError,
+  onReady,
+  className,
+  aspect = "video",
+}: GamePlayerProps) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [doc, setDoc] = useState<string | null>(null);
@@ -107,10 +116,7 @@ export function GamePlayer({ html, src, title, onScore, onError, onReady, classN
 
   return (
     <figure className={cn("flex flex-col gap-3", className)}>
-      <div
-        ref={wrapRef}
-        className={cn("relative w-full overflow-hidden border border-line bg-panel", ASPECT[aspect])}
-      >
+      <div ref={wrapRef} className={cn("relative w-full overflow-hidden border border-line bg-panel", ASPECT[aspect])}>
         {status === "running" && doc !== null ? (
           <iframe
             key={runId}
@@ -147,18 +153,33 @@ export function GamePlayer({ html, src, title, onScore, onError, onReady, classN
         )}
       </div>
 
-      <figcaption className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-tight">
+      <figcaption className="flex flex-wrap items-center justify-between gap-3 text-xs tracking-tight uppercase">
         <span className="text-ash">
           [ {status === "running" ? "Playing" : status} ] <span className="text-paper">{title}</span>
         </span>
         <span className="flex gap-4">
-          <button type="button" onClick={restart} disabled={status === "blocked"} className="transition-colors hover:text-accent disabled:opacity-40">
+          <button
+            type="button"
+            onClick={restart}
+            disabled={status === "blocked"}
+            className="transition-colors hover:text-accent disabled:opacity-40"
+          >
             Restart
           </button>
-          <button type="button" onClick={stop} disabled={status !== "running"} className="transition-colors hover:text-accent disabled:opacity-40">
+          <button
+            type="button"
+            onClick={stop}
+            disabled={status !== "running"}
+            className="transition-colors hover:text-accent disabled:opacity-40"
+          >
             Stop
           </button>
-          <button type="button" onClick={fullscreen} disabled={status !== "running"} className="transition-colors hover:text-accent disabled:opacity-40">
+          <button
+            type="button"
+            onClick={fullscreen}
+            disabled={status !== "running"}
+            className="transition-colors hover:text-accent disabled:opacity-40"
+          >
             Fullscreen
           </button>
         </span>

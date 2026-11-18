@@ -24,7 +24,12 @@ export function FeaturePromos() {
           return (
             <Reveal key={promo.id} duration={0.8}>
               <Card className="flex flex-col gap-[30px] p-5 md:p-10 lg:flex-row lg:items-stretch lg:gap-[60px]">
-                <div className={cn("relative min-h-[300px] overflow-hidden lg:min-h-[345px] lg:w-[580px] lg:shrink-0", flip ? "lg:order-1" : "lg:order-2")}>
+                <div
+                  className={cn(
+                    "relative min-h-[300px] overflow-hidden lg:min-h-[345px] lg:w-[580px] lg:shrink-0",
+                    flip ? "lg:order-1" : "lg:order-2",
+                  )}
+                >
                   <Media id={photos[PROMO_PHOTO[promo.id]!]} sizes="(min-width: 992px) 580px, 100vw" />
                 </div>
                 <div className={cn("flex flex-1 flex-col justify-center gap-10", flip ? "lg:order-2" : "lg:order-1")}>

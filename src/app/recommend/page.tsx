@@ -14,7 +14,13 @@ export const metadata: Metadata = {
 export default function RecommendPage() {
   return (
     <>
-      <PageBanner photo={photos.bannerRecommend} label={recommend.label} title={recommend.title} lead={recommend.lead} compact />
+      <PageBanner
+        photo={photos.bannerRecommend}
+        label={recommend.label}
+        title={recommend.title}
+        lead={recommend.lead}
+        compact
+      />
       <Section>
         <div className="container-site">
           <RecommendFinder />
