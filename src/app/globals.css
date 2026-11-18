@@ -161,7 +161,7 @@
   font-weight: 500;
   font-size: 58px;
   line-height: 1.2;
-  letter-spacing: -0.03em;
+  letter-spacing: -2px;
   text-transform: uppercase;
 
   @media (max-width: 767.98px) {
@@ -187,7 +187,7 @@
   font-weight: 500;
   font-size: 40px;
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: -1px;
   text-transform: uppercase;
 
   @media (max-width: 991.98px) {
@@ -200,7 +200,7 @@
   font-weight: 500;
   font-size: 34px;
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.5px;
   text-transform: uppercase;
 
   @media (max-width: 767.98px) {
@@ -222,7 +222,7 @@
   font-weight: 500;
   font-size: 54px;
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -3px;
 }
 
 @utility type-body {
