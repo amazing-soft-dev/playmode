@@ -84,12 +84,17 @@ export function DailyChallenge() {
           </p>
         </div>
         {challenge && info ? (
-          <GamePlayer src={`/games/${challenge.template}.html`} title={challenge.theme} aspect={info.aspect} onScore={onScore} />
+          <GamePlayer
+            src={`/games/${challenge.template}.html`}
+            title={challenge.theme}
+            aspect={info.aspect}
+            onScore={onScore}
+          />
         ) : (
           <div className="aspect-video border border-line bg-panel" />
         )}
         {message && (
-          <p role="status" className="type-small border-l-2 border-accent pl-3 text-paper">
+          <p role="status" className="border-l-2 border-accent pl-3 type-small text-paper">
             {message}
           </p>
         )}
@@ -105,7 +110,7 @@ export function DailyChallenge() {
             )}
           </p>
         )}
-        <ul className="type-small flex flex-col gap-2 border-t border-line pt-6 text-fog">
+        <ul className="flex flex-col gap-2 border-t border-line pt-6 type-small text-fog">
           {daily.rules.map((rule) => (
             <li key={rule}>— {rule}</li>
           ))}
@@ -132,7 +137,10 @@ export function DailyChallenge() {
               return (
                 <li
                   key={row.playerId}
-                  className={cn("type-small flex items-center gap-4 border-b border-line px-1 py-3", mine && "bg-accent-soft text-paper")}
+                  className={cn(
+                    "flex items-center gap-4 border-b border-line px-1 py-3 type-small",
+                    mine && "bg-accent-soft text-paper",
+                  )}
                 >
                   <span className="w-8 text-ash tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                   <span className="flex-1 truncate">

@@ -21,16 +21,16 @@ How to check, in a real browser, that a game running in the player cannot reach 
 
 Checked on 2026-11-18 in the built-in Chromium browser against the dev server.
 
-| Attempt from inside the game | Result |
-| --- | --- |
-| Read `document.cookie` | Blocked (SecurityError) |
-| `localStorage`, `sessionStorage`, `indexedDB` | Blocked (SecurityError) |
-| Read `parent.document` or `parent.localStorage` | Blocked (SecurityError) |
-| Navigate the page with `top.location` | Blocked (SecurityError); the page stayed put |
-| `window.open` | Blocked (returned null) |
-| Submit a form | Blocked: 1 frame load with `allow-scripts`, 2 with `allow-forms` (control) |
-| `fetch("/")` | Blocked (TypeError: opaque origin, no CORS) |
-| `self.origin` | `"null"` (opaque origin) |
+| Attempt from inside the game                                             | Result                                                                                                     |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Read `document.cookie`                                                   | Blocked (SecurityError)                                                                                    |
+| `localStorage`, `sessionStorage`, `indexedDB`                            | Blocked (SecurityError)                                                                                    |
+| Read `parent.document` or `parent.localStorage`                          | Blocked (SecurityError)                                                                                    |
+| Navigate the page with `top.location`                                    | Blocked (SecurityError); the page stayed put                                                               |
+| `window.open`                                                            | Blocked (returned null)                                                                                    |
+| Submit a form                                                            | Blocked: 1 frame load with `allow-scripts`, 2 with `allow-forms` (control)                                 |
+| `fetch("/")`                                                             | Blocked (TypeError: opaque origin, no CORS)                                                                |
+| `self.origin`                                                            | `"null"` (opaque origin)                                                                                   |
 | Forged `{type:"navigate"}` and `{type:"score", value:"999999"}` messages | Delivered to the window but dropped by `parseGameMessage` (unit-tested in `src/lib/game-messages.test.ts`) |
 
 ## Still to do for production

@@ -58,7 +58,7 @@ export function Select({ className, children, ...props }: ComponentPropsWithoutR
 
 export function Checkbox({ label, className, ...props }: ComponentPropsWithoutRef<"input"> & { label: ReactNode }) {
   return (
-    <label className={cn("type-small flex cursor-pointer items-start gap-3 text-fog", className)}>
+    <label className={cn("flex cursor-pointer items-start gap-3 type-small text-fog", className)}>
       <input type="checkbox" className="mt-1 size-4 shrink-0 accent-accent" {...props} />
       <span>{label}</span>
     </label>

@@ -18,7 +18,7 @@ export function Card({
     <Tag
       className={cn(
         "group/card relative border border-line bg-ink transition-colors duration-300",
-        interactive && "hover:border-accent focus-within:border-accent",
+        interactive && "focus-within:border-accent hover:border-accent",
         className,
       )}
       {...props}
@@ -32,7 +32,7 @@ export function Card({
 function Crosses({ interactive }: { interactive: boolean }) {
   const cross = cn(
     "pointer-events-none absolute z-10 size-[13px] text-paper transition-colors duration-300",
-    interactive && "group-hover/card:text-accent group-focus-within/card:text-accent",
+    interactive && "group-focus-within/card:text-accent group-hover/card:text-accent",
   );
   const svg = (
     <svg viewBox="0 0 13 13" aria-hidden className="size-full">
@@ -60,7 +60,7 @@ export function Chip({
       type="button"
       aria-pressed={selected}
       className={cn(
-        "type-label inline-flex h-9 items-center border px-4 transition-colors duration-200",
+        "inline-flex h-9 items-center border px-4 type-label transition-colors duration-200",
         selected
           ? "border-accent bg-accent text-accent-ink"
           : "border-line text-fog hover:border-accent hover:text-accent",
@@ -75,7 +75,7 @@ export function Chip({
 export function Tag({ className, ...props }: ComponentPropsWithoutRef<"span">) {
   return (
     <span
-      className={cn("type-label inline-flex h-7 items-center border border-line px-3 text-fog", className)}
+      className={cn("inline-flex h-7 items-center border border-line px-3 type-label text-fog", className)}
       {...props}
     />
   );

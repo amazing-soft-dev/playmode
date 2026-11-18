@@ -6,18 +6,18 @@ provider, RAWG, Stripe, AdSense) replace the mocks one at a time without changin
 
 ## Layout of the code
 
-| Path | What lives there |
-| --- | --- |
-| `src/app/` | Routes: pages, `not-found`, `template` (page fade), `sitemap.ts`, `robots.ts`, `opengraph-image.tsx`, `llms.txt`, and `api/*/route.api.ts` handlers |
+| Path              | What lives there                                                                                                                                                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`        | Routes: pages, `not-found`, `template` (page fade), `sitemap.ts`, `robots.ts`, `opengraph-image.tsx`, `llms.txt`, and `api/*/route.api.ts` handlers                                                                                    |
 | `src/components/` | `ui/` primitives, `motion/`, `layout/` (header, menus, search, footer), `home/`, `sections/`, `game/`, and one folder per feature (`create`, `daily`, `gallery`, `play`, `recommend`, `pricing`, `account`, `admin`, `legal`, `forms`) |
-| `src/content/` | All copy and figures; `site.ts` is the entry point, `media.ts` maps photo slots to manifest ids |
-| `src/lib/domain/` | Data model types (plan section 08), product limits (`policy.ts`), age rules, time helpers, nicknames |
-| `src/lib/repos/` | Repository interfaces (`types.ts`), mock implementations (`mock/`), and the factory (`index.ts`) |
-| `src/lib/` | Game scanner, message protocol, moderation, quota, downloads, recommendations, media accessor, image loader, security headers |
-| `src/lib/api/` | Route-handler helpers: env, Resend email, rate limiter, form wrapper, request schemas, server-side providers |
-| `public/games/` | The five original starter games (single HTML files) |
-| `media/` | `manifest.json` (credits for every photo and video) and the variant widths |
-| `scripts/` | Media fetch, WebP variants, image check, static export check |
+| `src/content/`    | All copy and figures; `site.ts` is the entry point, `media.ts` maps photo slots to manifest ids                                                                                                                                        |
+| `src/lib/domain/` | Data model types (plan section 08), product limits (`policy.ts`), age rules, time helpers, nicknames                                                                                                                                   |
+| `src/lib/repos/`  | Repository interfaces (`types.ts`), mock implementations (`mock/`), and the factory (`index.ts`)                                                                                                                                       |
+| `src/lib/`        | Game scanner, message protocol, moderation, quota, downloads, recommendations, media accessor, image loader, security headers                                                                                                          |
+| `src/lib/api/`    | Route-handler helpers: env, Resend email, rate limiter, form wrapper, request schemas, server-side providers                                                                                                                           |
+| `public/games/`   | The five original starter games (single HTML files)                                                                                                                                                                                    |
+| `media/`          | `manifest.json` (credits for every photo and video) and the variant widths                                                                                                                                                             |
+| `scripts/`        | Media fetch, WebP variants, image check, static export check                                                                                                                                                                           |
 
 ## Data flow
 
@@ -38,9 +38,9 @@ page or component ──► Repos interface (src/lib/repos/types.ts)
 
 ## Build targets
 
-| Target | Command | Notes |
-| --- | --- | --- |
-| Server | `npm run build` | What Vercel runs. Route handlers, image optimizer (AVIF, then WebP), security headers |
+| Target | Command                                              | Notes                                                                                                                                                                                                              |
+| ------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Server | `npm run build`                                      | What Vercel runs. Route handlers, image optimizer (AVIF, then WebP), security headers                                                                                                                              |
 | Static | `npm run images && NEXT_OUTPUT=export npm run build` | Plain HTML in `out/`. `route.api.ts` files are skipped because `pageExtensions` drops `api.ts`; images use the pre-built WebP variants through `src/lib/image-loader.ts`; forms explain they work on the live site |
 
 ## Game safety (plan section 10)

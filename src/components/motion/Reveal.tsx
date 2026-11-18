@@ -27,7 +27,15 @@ interface RevealProps extends Omit<HTMLMotionProps<"div">, "children"> {
  * part of the element enters the viewport. Motion's MotionConfig (reducedMotion="user") turns
  * it into an instant fade for people who prefer reduced motion.
  */
-export function Reveal({ children, duration = 0.6, index = 0, delay = 0, fadeOnly = false, as = "div", ...rest }: RevealProps) {
+export function Reveal({
+  children,
+  duration = 0.6,
+  index = 0,
+  delay = 0,
+  fadeOnly = false,
+  as = "div",
+  ...rest
+}: RevealProps) {
   const Tag = motion[as] as ElementType;
   return (
     <Tag

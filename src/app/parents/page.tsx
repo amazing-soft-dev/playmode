@@ -33,7 +33,7 @@ export default function ParentsPage() {
                 <h2 id={section.id} className="type-h3">
                   {section.title}
                 </h2>
-                <ul className="type-body flex flex-col gap-3 text-fog">
+                <ul className="flex flex-col gap-3 type-body text-fog">
                   {section.points.map((p) => (
                     <li key={p} className="flex gap-3">
                       <span aria-hidden className="text-accent">

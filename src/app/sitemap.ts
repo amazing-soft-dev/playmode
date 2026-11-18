@@ -18,7 +18,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: href === "/daily" ? ("daily" as const) : ("weekly" as const),
       priority: href === "/" ? 1 : 0.7,
     })),
-    ...GAMES.map((g) => ({ url: `${base}/play/${g.id}`, lastModified: g.publishedAt ?? undefined, changeFrequency: "weekly" as const, priority: 0.5 })),
-    ...posts.map((p) => ({ url: `${base}/news/${p.slug}`, lastModified: p.date, changeFrequency: "monthly" as const, priority: 0.5 })),
+    ...GAMES.map((g) => ({
+      url: `${base}/play/${g.id}`,
+      lastModified: g.publishedAt ?? undefined,
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    })),
+    ...posts.map((p) => ({
+      url: `${base}/news/${p.slug}`,
+      lastModified: p.date,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
   ];
 }

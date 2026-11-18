@@ -28,11 +28,15 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
   const onTabKey = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const count = gallery.tabs.length;
     const next =
-      event.key === "ArrowRight" ? (index + 1) % count
-      : event.key === "ArrowLeft" ? (index - 1 + count) % count
-      : event.key === "Home" ? 0
-      : event.key === "End" ? count - 1
-      : null;
+      event.key === "ArrowRight"
+        ? (index + 1) % count
+        : event.key === "ArrowLeft"
+          ? (index - 1 + count) % count
+          : event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? count - 1
+              : null;
     if (next === null) return;
     event.preventDefault();
     setTab(gallery.tabs[next]!.id);
@@ -70,7 +74,7 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
               onKeyDown={(e) => onTabKey(e, i)}
               onClick={() => setTab(t.id)}
               className={cn(
-                "type-nav border-b-2 pb-2 transition-colors duration-[400ms] ease-snap",
+                "border-b-2 pb-2 type-nav transition-colors duration-[400ms] ease-snap",
                 tab === t.id ? "border-accent text-accent" : "border-transparent text-fog hover:text-paper",
               )}
             >
@@ -91,7 +95,13 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
         </div>
       </div>
 
-      <div role="tabpanel" id={`${baseId}-panel`} aria-labelledby={`${baseId}-tab-${tab}`} tabIndex={0} className="focus-visible:outline-offset-8">
+      <div
+        role="tabpanel"
+        id={`${baseId}-panel`}
+        aria-labelledby={`${baseId}-tab-${tab}`}
+        tabIndex={0}
+        className="focus-visible:outline-offset-8"
+      >
         {games.length === 0 ? (
           <p className="type-body text-fog">{gallery.empty}</p>
         ) : (

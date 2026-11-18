@@ -17,7 +17,11 @@ const KEY = "pm.games.v1";
 
 let versionCounter = 0;
 
-function makeVersion(gameId: Id, input: { prompt: string; html: string; model: string }, createdAt: string): GameVersion {
+function makeVersion(
+  gameId: Id,
+  input: { prompt: string; html: string; model: string },
+  createdAt: string,
+): GameVersion {
   versionCounter += 1;
   const id = `${gameId}-v${Date.now().toString(36)}${versionCounter}`;
   return {
@@ -31,7 +35,7 @@ function makeVersion(gameId: Id, input: { prompt: string; html: string; model: s
     tokensOut: 0,
     errorLog: [],
     // Versions created in the same millisecond still sort in creation order.
-    createdAt: new Date(Date.parse(createdAt) + versionCounter % 1000).toISOString(),
+    createdAt: new Date(Date.parse(createdAt) + (versionCounter % 1000)).toISOString(),
   };
 }
 
@@ -60,7 +64,13 @@ export function createMockGames(store: KeyValueStore = memoryStore()): { games: 
       return load().games.filter((g) => g.ownerId === ownerId && g.status !== "removed");
     },
     async listTags() {
-      return [...new Set(load().games.filter(visible).flatMap((g) => g.tags))].sort();
+      return [
+        ...new Set(
+          load()
+            .games.filter(visible)
+            .flatMap((g) => g.tags),
+        ),
+      ].sort();
     },
     async get(id) {
       return load().games.find((g) => g.id === id) ?? null;
@@ -143,7 +153,9 @@ export function createMockGames(store: KeyValueStore = memoryStore()): { games: 
       state.html = { ...state.html, [version.id]: input.html };
       game.currentVersionId = version.id;
       // Keep only the newest versions (plan: last five) and drop the HTML of the rest.
-      const mine = state.versions.filter((v) => v.gameId === gameId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      const mine = state.versions
+        .filter((v) => v.gameId === gameId)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       for (const old of mine.slice(POLICY.versionsKept)) {
         state.versions = state.versions.filter((v) => v.id !== old.id);
         if (state.html) delete state.html[old.id];

@@ -41,9 +41,9 @@ export function PlanCards({ offers }: { offers: PlanOffer[] }) {
               </div>
               <p className="flex items-end gap-2">
                 <span className="type-stat font-semibold">${offer.priceMonthlyUsd}</span>
-                <span className="type-small pb-1 text-ash">{pricing.perMonth}</span>
+                <span className="pb-1 type-small text-ash">{pricing.perMonth}</span>
               </p>
-              <ul className="type-body flex flex-1 flex-col gap-3 text-fog">
+              <ul className="flex flex-1 flex-col gap-3 type-body text-fog">
                 {offer.features.map((f) => (
                   <li key={f} className="flex gap-3">
                     <span aria-hidden className={isPlus ? "text-accent" : "text-ash"}>

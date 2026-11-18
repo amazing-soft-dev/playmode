@@ -39,4 +39,6 @@ for (const item of stills) {
   }
 }
 
-console.log(`images: ${built} WebP variants built, ${skipped} up to date (${stills.length} images x ${WIDTHS.length} widths)`);
+console.log(
+  `images: ${built} WebP variants built, ${skipped} up to date (${stills.length} images x ${WIDTHS.length} widths)`,
+);

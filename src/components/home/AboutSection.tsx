@@ -30,7 +30,11 @@ export function AboutSection() {
             <Media id={photos.homeAbout} sizes="(min-width: 768px) 58vw, 100vw" />
           </Reveal>
           <div className="flex flex-col gap-5">
-            <Reveal duration={0.8} index={1} className="relative min-h-[240px] flex-1 overflow-hidden border border-line">
+            <Reveal
+              duration={0.8}
+              index={1}
+              className="relative min-h-[240px] flex-1 overflow-hidden border border-line"
+            >
               <BackgroundVideo id={videos.gameplay} />
               <span className="absolute bottom-4 left-4 flex size-12 items-center justify-center bg-accent text-accent-ink">
                 <PlayIcon className="size-5" />

@@ -32,7 +32,10 @@ test("three reports hide a game until it is reviewed", async () => {
   assert.equal((await games.get("tide-tiles"))!.status, "published");
   await reports.create("tide-tiles", "u-c", "inappropriate", "");
   assert.equal((await games.get("tide-tiles"))!.status, "hidden");
-  assert.equal((await games.listGallery({ tab: "new", limit: 100 })).some((g) => g.id === "tide-tiles"), false);
+  assert.equal(
+    (await games.listGallery({ tab: "new", limit: 100 })).some((g) => g.id === "tide-tiles"),
+    false,
+  );
 
   for (const report of await reports.listQueue()) await reports.resolve(report.id, "dismissed");
   assert.equal((await games.get("tide-tiles"))!.status, "published");
@@ -44,7 +47,8 @@ test("drafts keep only the last five versions and their HTML", async () => {
   const { game, version } = await games.saveDraft({ ...base, prompt: "first", html: "<html>1</html>" });
   assert.equal(game.status, "draft");
   assert.equal(await games.getVersionHtml(version.id), "<html>1</html>");
-  for (let i = 2; i <= 7; i += 1) await games.addVersion(game.id, "u-1", { prompt: `v${i}`, html: `<html>${i}</html>`, model: "mock" });
+  for (let i = 2; i <= 7; i += 1)
+    await games.addVersion(game.id, "u-1", { prompt: `v${i}`, html: `<html>${i}</html>`, model: "mock" });
   const versions = await games.listVersions(game.id);
   assert.equal(versions.length, 5);
   assert.equal(versions[0]?.prompt, "v7");

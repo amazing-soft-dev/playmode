@@ -2,7 +2,8 @@
 
 import { type FormEvent, useState } from "react";
 
-export type FormState = { kind: "idle" } | { kind: "sending" } | { kind: "sent" } | { kind: "error"; message: string } | { kind: "static" };
+export type FormState =
+  { kind: "idle" } | { kind: "sending" } | { kind: "sent" } | { kind: "error"; message: string } | { kind: "static" };
 
 /** True in the static export, which has no /api routes. */
 export const IS_STATIC_EXPORT = process.env.NEXT_PUBLIC_STATIC_EXPORT === "1";
@@ -21,7 +22,11 @@ export function useFormPost(endpoint: string) {
     const body = Object.fromEntries(new FormData(form).entries());
     setState({ kind: "sending" });
     try {
-      const res = await fetch(endpoint, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      });
       if (res.ok) {
         form.reset();
         setState({ kind: "sent" });
@@ -37,4 +42,5 @@ export function useFormPost(endpoint: string) {
   return { state, onSubmit, reset: () => setState({ kind: "idle" }) };
 }
 
-export const STATIC_FORM_MESSAGE = "This preview is a static build without a server, so forms can't send. They work on the live site.";
+export const STATIC_FORM_MESSAGE =
+  "This preview is a static build without a server, so forms can't send. They work on the live site.";

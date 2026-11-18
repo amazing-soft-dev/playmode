@@ -9,7 +9,7 @@ export function LimitNotice() {
   const params = useSearchParams();
   if (params.get("reason") !== "limit") return null;
   return (
-    <p role="status" className="type-body border border-accent bg-accent-soft p-5 text-paper">
+    <p role="status" className="border border-accent bg-accent-soft p-5 type-body text-paper">
       {pricing.limitReached}
     </p>
   );

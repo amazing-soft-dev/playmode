@@ -25,7 +25,11 @@ const limiter = createRateLimiter({ limit: 20, windowMs: 60 * 60_000 });
  */
 export async function POST(request: Request) {
   const limit = limiter(clientIp(request));
-  if (!limit.ok) return Response.json({ error: "Too many builds from this network. Try again later." }, { status: 429, headers: { "retry-after": String(limit.retryAfter) } });
+  if (!limit.ok)
+    return Response.json(
+      { error: "Too many builds from this network. Try again later." },
+      { status: 429, headers: { "retry-after": String(limit.retryAfter) } },
+    );
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "Pick a template and describe your game." }, { status: 400 });
@@ -35,7 +39,17 @@ export async function POST(request: Request) {
 
   const result = await serverAi.generate({ template: parsed.data.template, prompt: checked.prompt });
   const scan = scanGameHtml(result.html);
-  if (!scan.ok) return Response.json({ error: "The game didn't pass the safety check. Try again; this didn't use a build.", issues: scan.issues }, { status: 422 });
+  if (!scan.ok)
+    return Response.json(
+      { error: "The game didn't pass the safety check. Try again; this didn't use a build.", issues: scan.issues },
+      { status: 422 },
+    );
 
-  return Response.json({ html: result.html, model: result.model, tokensIn: result.tokensIn, tokensOut: result.tokensOut, replacements: checked.replacements });
+  return Response.json({
+    html: result.html,
+    model: result.model,
+    tokensIn: result.tokensIn,
+    tokensOut: result.tokensOut,
+    replacements: checked.replacements,
+  });
 }

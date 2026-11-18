@@ -28,7 +28,17 @@ export function Media({ id, sizes, fill = true, priority = false, className, alt
   );
   const style = item.focal ? { objectPosition: item.focal } : undefined;
   if (fill) {
-    return <Image src={item.src} alt={alt ?? item.alt} fill sizes={sizes} priority={priority} className={classes} style={style} />;
+    return (
+      <Image
+        src={item.src}
+        alt={alt ?? item.alt}
+        fill
+        sizes={sizes}
+        priority={priority}
+        className={classes}
+        style={style}
+      />
+    );
   }
   return (
     <Image

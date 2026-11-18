@@ -14,7 +14,11 @@ const POST = formRoute({
 });
 
 const req = (body: unknown, ip = "1.1.1.1", type = "application/json") =>
-  new Request("http://x/api/contact", { method: "POST", headers: { "content-type": type, "x-forwarded-for": ip }, body: JSON.stringify(body) });
+  new Request("http://x/api/contact", {
+    method: "POST",
+    headers: { "content-type": type, "x-forwarded-for": ip },
+    body: JSON.stringify(body),
+  });
 
 const ok = { name: "Ana", email: "ana@example.com", message: "Hello there, team!" };
 

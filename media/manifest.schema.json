@@ -3,9 +3,7 @@
   "title": "PlayerMode media manifest",
   "description": "Every photo and video on the site, with its free-stock source, author and license.",
   "type": "object",
-  "required": [
-    "items"
-  ],
+  "required": ["items"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -15,17 +13,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "kind",
-          "file",
-          "source",
-          "sourceUrl",
-          "downloadUrl",
-          "author",
-          "license",
-          "alt"
-        ],
+        "required": ["id", "kind", "file", "source", "sourceUrl", "downloadUrl", "author", "license", "alt"],
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -34,11 +22,7 @@
             "description": "Stable id used in code, e.g. media(\"hero-arcade\")"
           },
           "kind": {
-            "enum": [
-              "photo",
-              "video",
-              "poster"
-            ],
+            "enum": ["photo", "video", "poster"],
             "description": "poster = still frame of a video, generated locally"
           },
           "file": {
@@ -47,11 +31,7 @@
             "description": "Path of the committed, optimized file"
           },
           "source": {
-            "enum": [
-              "unsplash",
-              "pexels",
-              "local"
-            ]
+            "enum": ["unsplash", "pexels", "local"]
           },
           "sourceUrl": {
             "type": "string",
@@ -69,10 +49,7 @@
             "type": "string"
           },
           "license": {
-            "enum": [
-              "Unsplash License",
-              "Pexels License"
-            ]
+            "enum": ["Unsplash License", "Pexels License"]
           },
           "licenseUrl": {
             "type": "string",

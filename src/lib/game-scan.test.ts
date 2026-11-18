@@ -35,7 +35,10 @@ test("network, storage, dynamic code and navigation are rejected", () => {
   for (const [code, rule] of cases) {
     const result = scanGameHtml(page("<canvas></canvas>", code));
     assert.equal(result.ok, false, code);
-    assert.ok(result.issues.some((i) => i.rule === rule), `${code} -> ${rule}`);
+    assert.ok(
+      result.issues.some((i) => i.rule === rule),
+      `${code} -> ${rule}`,
+    );
   }
 });
 
@@ -61,6 +64,9 @@ test("size cap and document shape are enforced", () => {
 });
 
 test("visible text includes the title, body text and fillText literals only", () => {
-  const html = page("<h1>Neon Dash</h1><style>.x{}</style>", `ctx.fillText("GAME OVER", 1, 1); ctx.fillText(\`\${score}\`, 1, 1);`);
+  const html = page(
+    "<h1>Neon Dash</h1><style>.x{}</style>",
+    `ctx.fillText("GAME OVER", 1, 1); ctx.fillText(\`\${score}\`, 1, 1);`,
+  );
   assert.deepEqual(extractVisibleText(html), ["Test Game", "Neon Dash", "GAME OVER"]);
 });

@@ -14,8 +14,18 @@ const KEY = "pm.challenges.v1";
 
 /** Generated nicknames for the sample leaderboard rows. */
 const SAMPLE_PLAYERS = [
-  "PixelOtter42", "QuietFox17", "MossByte09", "LumenKite31", "VoltWren55", "CloudPine08",
-  "SunnyGlitch77", "EchoAtlas12", "NovaBadger21", "TinyComet64", "RetroHeron33", "BlueMango90",
+  "PixelOtter42",
+  "QuietFox17",
+  "MossByte09",
+  "LumenKite31",
+  "VoltWren55",
+  "CloudPine08",
+  "SunnyGlitch77",
+  "EchoAtlas12",
+  "NovaBadger21",
+  "TinyComet64",
+  "RetroHeron33",
+  "BlueMango90",
 ];
 
 export function createMockChallenges(
@@ -55,7 +65,9 @@ export function createMockChallenges(
         const prev = best.get(s.playerId);
         if (!prev || s.score > prev.score) best.set(s.playerId, s);
       }
-      return [...best.values()].sort((a, b) => b.score - a.score || a.createdAt.localeCompare(b.createdAt)).slice(0, limit);
+      return [...best.values()]
+        .sort((a, b) => b.score - a.score || a.createdAt.localeCompare(b.createdAt))
+        .slice(0, limit);
     },
 
     async submitScore(entry) {
@@ -72,7 +84,11 @@ export function createMockChallenges(
     },
 
     async streak(playerId): Promise<Streak> {
-      const days = new Set(load().scores.filter((s) => s.playerId === playerId).map((s) => s.date));
+      const days = new Set(
+        load()
+          .scores.filter((s) => s.playerId === playerId)
+          .map((s) => s.date),
+      );
       const sorted = [...days].sort();
       let best = 0;
       let run = 0;

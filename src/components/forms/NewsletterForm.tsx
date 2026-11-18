@@ -28,9 +28,14 @@ export function NewsletterForm() {
           required
           autoComplete="email"
           placeholder="you@example.com"
-          className="type-body h-11 min-w-0 flex-1 bg-transparent text-paper placeholder:text-ash focus:outline-none"
+          className="h-11 min-w-0 flex-1 bg-transparent type-body text-paper placeholder:text-ash focus:outline-none"
         />
-        <button type="submit" aria-label="Subscribe" disabled={state.kind === "sending"} className="px-2 transition-colors hover:text-accent disabled:opacity-50">
+        <button
+          type="submit"
+          aria-label="Subscribe"
+          disabled={state.kind === "sending"}
+          className="px-2 transition-colors hover:text-accent disabled:opacity-50"
+        >
           <ArrowIcon className="size-5" />
         </button>
       </div>
