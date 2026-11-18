@@ -72,6 +72,7 @@ GitHub does not read `.github/rulesets/` on its own. After editing a ruleset fil
 ## Before you push
 
 ```bash
+npm run format
 npm run lint
 npm run typecheck
 npm test
