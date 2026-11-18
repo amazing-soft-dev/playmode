@@ -18,7 +18,7 @@ export function HomeHero() {
     <section className="relative isolate overflow-clip pt-[120px] pb-20 md:pt-[230px] lg:flex lg:min-h-svh lg:flex-col lg:justify-end lg:pt-[250px] lg:pb-[100px]">
       <div className="absolute inset-0 -z-10">
         <BackgroundVideo id={videos.hero} priority />
-        <div className="absolute inset-0 bg-ink/45" />
+        <div className="absolute inset-0 bg-ink/30" />
         <HeroLines />
       </div>
 
