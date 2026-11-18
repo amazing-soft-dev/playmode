@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PlayerMode sandbox probe</title>
+</head>
+<body>
+<p>Sandbox probe: tries everything a hostile game might, then reports what got through.</p>
+<script>
+// This file is a test fixture, not a game. It intentionally uses APIs the static scanner rejects,
+// so it can only run when injected directly into a sandboxed frame by the verification procedure
+// in docs/security/sandbox-verification.md.
+(async function () {
+  const results = {};
+  const attempt = async (name, fn) => {
+    try {
+      const value = await fn();
+      results[name] = "ALLOWED: " + String(value).slice(0, 60);
+    } catch (error) {
+      results[name] = "blocked (" + (error && error.name) + ")";
+    }
+  };
+  await attempt("document.cookie", () => document.cookie);
+  await attempt("localStorage", () => localStorage.getItem("pm.profile.v1"));
+  await attempt("sessionStorage", () => sessionStorage.length);
+  await attempt("indexedDB", () => indexedDB.open("probe") && "opened");
+  await attempt("parent.document", () => parent.document.title);
+  await attempt("parent.localStorage", () => parent.localStorage.length);
+  await attempt("top.location write", () => { top.location.href = "/?hijacked"; return "assigned"; });
+  await attempt("window.open", () => { const w = window.open("/"); if (!w) throw { name: "NullWindow" }; return "opened"; });
+  await attempt("form submit", () => { const f = document.createElement("form"); f.action = "/"; f.method = "post"; document.body.appendChild(f); f.submit(); return "submitted"; });
+  await attempt("fetch same-origin", async () => { const r = await fetch("/"); return r.status; });
+  await attempt("origin", () => { if (self.origin === "null") throw { name: "OpaqueOrigin" }; return self.origin; });
+  // Forged messages the player must ignore.
+  parent.postMessage({ type: "navigate", url: "https://example.invalid" }, "*");
+  parent.postMessage({ type: "score", value: "999999" }, "*");
+  parent.postMessage({ type: "probe-result", results: results }, "*");
+})();
+</script>
+</body>
+</html>
