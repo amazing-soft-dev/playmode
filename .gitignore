@@ -50,19 +50,8 @@ next-env.d.ts
 # generated responsive images (npm run images)
 /public/media/_variants/
 
-# local research data: template audit captures, screenshots, legacy prototype
+# local research data: template audit screenshots, the legacy prototype and Craft Anything run output
 /.research/
-
-# Craft Anything run output (moved into /.research/ by issue #59)
-/capture/
-/checks/
-/inbox/
-/investigation.cany/
-/craft.json
-/feed.json
-/usage.json
-/build-activity.log
-/.craft-anything.tmp-*
 
 # local Claude Code settings and preview launch config
 /.claude/

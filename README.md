@@ -24,10 +24,31 @@ Production is a Next.js app that Vercel deploys from `main`.
 
 ```bash
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000. Everything works locally without keys: data comes from mock
+repositories (state is kept in your browser), and form emails are logged instead of sent. To try
+the founder admin page, sign in as `founder@playermode.test`.
+
+## Routes
+
+| Route | What it is |
+| --- | --- |
+| `/` | Home: hero with the make-a-game prompt, how it works, about, stats, daily challenge and templates, promos, trending games, creators |
+| `/create` | Game maker: template, prompt, generate, change, fix, versions, save, publish, download |
+| `/daily` | Daily challenge with countdown, streak and top-100 leaderboard |
+| `/gallery`, `/play/[id]` | Community gallery and the sandboxed player (like, report, download, share) |
+| `/recommend` | AI game picks from a real game catalog |
+| `/pricing`, `/account`, `/login` | Plans, the player's games and usage, sign-in with the age gate |
+| `/parents`, `/about`, `/faq`, `/contact`, `/news` | Content pages |
+| `/legal/*` | Terms, privacy, DMCA and media credits |
+| `/admin` | Founder-only challenge and report queues |
+| `/api/*` | Contact, waitlist, newsletter, report, parents, generate, recommend, health (server build only) |
+
+See [docs/architecture.md](docs/architecture.md) for how it fits together and
+[docs/launch-checklist.md](docs/launch-checklist.md) for what's left before launch.
 
 ## Scripts
 
