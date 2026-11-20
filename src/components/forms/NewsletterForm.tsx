@@ -20,7 +20,7 @@ export function NewsletterForm() {
       <label htmlFor="newsletter-email" className="type-label text-fog">
         Devlog updates by email
       </label>
-      <div className="flex border-b border-paper/30 focus-within:border-accent">
+      <div className="flex border-b border-ash focus-within:border-accent">
         <input
           id="newsletter-email"
           name="email"
