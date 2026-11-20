@@ -218,7 +218,7 @@ export function GamePlayer({
         )}
       </div>
 
-      <figcaption className="flex flex-wrap items-center justify-between gap-3 text-xs tracking-tight uppercase">
+      <figcaption className="flex flex-wrap items-center justify-between gap-x-3 type-label whitespace-normal">
         <span className="text-ash">
           [ {status === "running" ? "Playing" : status} ] <span className="text-paper">{title}</span>
         </span>
@@ -227,7 +227,7 @@ export function GamePlayer({
             type="button"
             onClick={restart}
             disabled={status === "blocked"}
-            className="transition-colors hover:text-accent disabled:opacity-40"
+            className="inline-flex min-h-6 items-center transition-colors hover:text-accent disabled:opacity-40 max-sm:min-h-11"
           >
             Restart
           </button>
@@ -235,7 +235,7 @@ export function GamePlayer({
             type="button"
             onClick={stop}
             disabled={status !== "running"}
-            className="transition-colors hover:text-accent disabled:opacity-40"
+            className="inline-flex min-h-6 items-center transition-colors hover:text-accent disabled:opacity-40 max-sm:min-h-11"
           >
             Stop
           </button>
@@ -243,7 +243,7 @@ export function GamePlayer({
             type="button"
             onClick={fullscreen}
             disabled={status !== "running"}
-            className="transition-colors hover:text-accent disabled:opacity-40"
+            className="inline-flex min-h-6 items-center transition-colors hover:text-accent disabled:opacity-40 max-sm:min-h-11"
           >
             Fullscreen
           </button>

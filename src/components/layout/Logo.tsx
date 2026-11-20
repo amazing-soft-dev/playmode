@@ -4,13 +4,13 @@ import Link from "next/link";
 import { brand } from "@/content/site";
 import { cn } from "@/lib/cn";
 
-/** The PlayerMode mark plus the Syne wordmark, linking home. */
+/** The PlayerMode mark plus the Syne wordmark, linking home. The link is 44px tall for touch. */
 export function Logo({ className, onNavigate }: { className?: string; onNavigate?: () => void }) {
   return (
     <Link
       href="/"
       onClick={onNavigate}
-      className={cn("group/logo inline-flex items-center gap-2.5", className)}
+      className={cn("group/logo inline-flex min-h-11 items-center gap-2.5", className)}
       aria-label={`${brand.name} home`}
     >
       <Image src="/brand/playermode-logo-light.png" alt="" width={28} height={28} priority className="size-7" />
