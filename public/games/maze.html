@@ -44,6 +44,8 @@ const SCORE_MIN = 0, SCORE_MAX = 30000;
 const COL = { bg: "#000", fg: "#fff", grey: "#7b7878", dark: "#333", accent: "#C6FF3D" };
 const FONT = "ui-monospace, monospace";
 const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+// The title comes from <title>, so a game made from this template shows its own name.
+const GAME_TITLE = (document.title || "LUMEN MAZE").trim().toUpperCase();
 
 const RUN_TIME = 75;          // seconds per run
 const ORB_TIME = 2;           // seconds added per orb
@@ -58,6 +60,7 @@ function levelSize(level) {   // columns x rows, grows each level
 
 // ------------------------------------------------------------ CANVAS + LETTERBOX
 const canvas = document.getElementById("game");
+canvas.setAttribute("aria-label", GAME_TITLE + " - timed maze game");
 const ctx = canvas.getContext("2d");
 const view = { scale: 1, ox: 0, oy: 0, dpr: 1 };
 
@@ -96,6 +99,12 @@ function text(str, x, y, size, color, align, bold) {
   ctx.textAlign = align || "center";
   ctx.textBaseline = "middle";
   ctx.fillText(str, x, y);
+}
+// Largest bold size up to `max` at which `str` fits the view with a 20px margin each side.
+function fitSize(str, max) {
+  ctx.font = "bold " + max + "px " + FONT;
+  const w = ctx.measureText(str).width;
+  return w > VIEW_W - 40 ? Math.floor((max * (VIEW_W - 40)) / w) : max;
 }
 function pad(n, len) { return String(Math.max(0, Math.floor(n))).padStart(len, "0"); }
 
@@ -452,7 +461,7 @@ function blinkOn() { return REDUCED || Math.floor(clock * 2.2) % 2 === 0; }
 
 function drawTitle() {
   overlay(0.8);
-  text("LUMEN MAZE", VIEW_W / 2, 56, 34, COL.fg, "center", true);
+  text(GAME_TITLE, VIEW_W / 2, 56, fitSize(GAME_TITLE, 34), COL.fg, "center", true);
   ctx.fillStyle = COL.accent;
   ctx.fillRect(VIEW_W / 2 - 104, 80, 208, 3);
   text("[ A NEW MAZE EVERY RUN ]", VIEW_W / 2, 96, 10, COL.grey);

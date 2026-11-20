@@ -41,6 +41,8 @@ const SCORE_MIN = 0, SCORE_MAX = 250000;
 const COL = { bg: "#000", fg: "#fff", grey: "#7b7878", dark: "#333", accent: "#C6FF3D" };
 const FONT = "ui-monospace, monospace";
 const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+// The title comes from <title>, so a game made from this template shows its own name.
+const GAME_TITLE = (document.title || "STAR SWEEP").trim().toUpperCase();
 
 const RUN_TIME = 90;          // seconds per run
 const MAX_SHIELDS = 3;
@@ -51,6 +53,7 @@ const SHIELD_BONUS = 1000;    // per shield left when the timer ends
 
 // ------------------------------------------------------------ CANVAS + LETTERBOX
 const canvas = document.getElementById("game");
+canvas.setAttribute("aria-label", GAME_TITLE + " - shape sweeping arcade game");
 const ctx = canvas.getContext("2d");
 const view = { scale: 1, ox: 0, oy: 0, dpr: 1 };
 
@@ -92,6 +95,12 @@ function text(str, x, y, size, color, align, bold) {
   ctx.textAlign = align || "center";
   ctx.textBaseline = "middle";
   ctx.fillText(str, x, y);
+}
+// Largest bold size up to `max` at which `str` fits the view with a 20px margin each side.
+function fitSize(str, max) {
+  ctx.font = "bold " + max + "px " + FONT;
+  const w = ctx.measureText(str).width;
+  return w > VIEW_W - 40 ? Math.floor((max * (VIEW_W - 40)) / w) : max;
 }
 function pad(n, len) { return String(Math.max(0, Math.floor(n))).padStart(len, "0"); }
 function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
@@ -538,8 +547,13 @@ function blinkOn() { return REDUCED || Math.floor(clock * 2.2) % 2 === 0; }
 
 function drawTitle() {
   overlay(0.4);
-  text("STAR", VIEW_W / 2, 150, 46, COL.fg, "center", true);
-  text("SWEEP", VIEW_W / 2, 198, 46, COL.fg, "center", true);
+  // Two lines on the tall screen: the first half of the words, then the rest (one line if one word).
+  const words = GAME_TITLE.split(/\s+/);
+  const half = Math.ceil(words.length / 2);
+  const line1 = words.slice(0, half).join(" "), line2 = words.slice(half).join(" ");
+  const size = line2 ? Math.min(fitSize(line1, 46), fitSize(line2, 46)) : fitSize(line1, 46);
+  text(line1, VIEW_W / 2, line2 ? 150 : 174, size, COL.fg, "center", true);
+  if (line2) text(line2, VIEW_W / 2, 198, size, COL.fg, "center", true);
   ctx.fillStyle = COL.accent;
   ctx.fillRect(VIEW_W / 2 - 80, 230, 160, 3);
   text("[ CLEAR THE SKY OF SHAPES ]", VIEW_W / 2, 250, 10, COL.grey);
