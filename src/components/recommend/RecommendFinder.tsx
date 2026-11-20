@@ -104,7 +104,7 @@ export function RecommendFinder() {
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, 300))}
             placeholder={recommend.askPlaceholder}
-            className="h-14 border border-line bg-ink px-4 type-body text-paper placeholder:text-ash focus:border-accent focus:outline-none"
+            className="h-14 border border-ash bg-ink px-4 type-body text-paper placeholder:text-ash focus:border-accent focus:outline-none"
           />
         </label>
         <div className="flex flex-wrap gap-2">
