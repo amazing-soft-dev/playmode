@@ -40,7 +40,9 @@ function framed(variant: ButtonVariant, block: boolean, className?: string) {
     "border-paper hover:border-accent hover:text-accent focus-visible:border-accent focus-visible:text-accent",
     "disabled:pointer-events-none disabled:opacity-40 aria-disabled:pointer-events-none aria-disabled:opacity-40",
     variant === "primary" && "border-paper",
-    block && "flex w-full",
+    // A flex column stretches its children; an explicit fit-content width keeps the frame tight
+    // around the label and arrow there. `block` opts in to the full width instead.
+    block ? "flex w-full" : "w-fit",
     className,
   );
 }
