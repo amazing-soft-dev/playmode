@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { CloseIcon, PlayIcon } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { parseGameMessage, withErrorReporter } from "@/lib/game-messages";
 import { type ScanIssue, scanGameHtml } from "@/lib/game-scan";
@@ -110,13 +111,52 @@ export function GamePlayer({
 
   const stop = useCallback(() => setStatus("stopped"), []);
 
+  // Full screen: the Fullscreen API where the browser has it for elements; otherwise (iPhone
+  // Safari) a fixed layer over the page with its own close button. `native` tracks the API state
+  // so the phone prompt hides while the player is already full screen.
+  const [expanded, setExpanded] = useState(false);
+  const [native, setNative] = useState(false);
+
   const fullscreen = useCallback(() => {
-    void wrapRef.current?.requestFullscreen?.().catch(() => undefined);
+    const el = wrapRef.current;
+    if (el && typeof el.requestFullscreen === "function") {
+      void el.requestFullscreen().catch(() => setExpanded(true));
+    } else {
+      setExpanded(true);
+    }
   }, []);
+
+  useEffect(() => {
+    const onChange = () => setNative(document.fullscreenElement === wrapRef.current);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  useEffect(() => {
+    if (!expanded) return;
+    const root = document.documentElement;
+    const previous = root.style.overflow;
+    root.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExpanded(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      root.style.overflow = previous;
+    };
+  }, [expanded]);
 
   return (
     <figure className={cn("flex flex-col gap-3", className)}>
-      <div ref={wrapRef} className={cn("relative w-full overflow-hidden border border-line bg-panel", ASPECT[aspect])}>
+      <div
+        ref={wrapRef}
+        className={cn(
+          "w-full overflow-hidden",
+          // Position, border and background come from one branch only, so no two utilities compete.
+          expanded ? "fixed inset-0 z-50 h-dvh bg-ink" : cn("relative border border-line bg-panel", ASPECT[aspect]),
+        )}
+      >
         {status === "running" && doc !== null ? (
           <iframe
             key={runId}
@@ -150,6 +190,31 @@ export function GamePlayer({
               </div>
             )}
           </div>
+        )}
+        {/* Phones: a 350px-wide canvas makes in-game text tiny, so offer full screen up front. */}
+        {status === "running" && !expanded && !native && (
+          <button
+            type="button"
+            onClick={fullscreen}
+            className="absolute right-3 bottom-3 inline-flex min-h-11 items-center gap-2 bg-accent px-4 type-caps text-accent-ink sm:hidden"
+          >
+            <PlayIcon className="size-4" /> Play full screen
+          </button>
+        )}
+        {expanded && aspect === "video" && (
+          <p className="pointer-events-none absolute inset-x-0 bottom-6 hidden text-center type-label text-fog portrait:block">
+            Turn your phone sideways to play bigger
+          </p>
+        )}
+        {expanded && (
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            aria-label="Close full screen"
+            className="absolute top-3 right-3 z-10 flex size-11 items-center justify-center bg-ink/80 text-paper hover:text-accent"
+          >
+            <CloseIcon className="size-[22px]" />
+          </button>
         )}
       </div>
 
