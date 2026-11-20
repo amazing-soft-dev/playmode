@@ -5,7 +5,7 @@ import { Geist_Mono, Host_Grotesk, Syne } from "next/font/google";
  * at runtime):
  * - Syne 700 for the oversized PLAYERMODE wordmark and display parentheses;
  * - Host Grotesk for uppercase headings;
- * - Geist Mono (light) for body copy, labels, navigation and buttons.
+ * - Geist Mono for body copy (Regular), labels (Light), navigation and buttons (Medium).
  */
 export const display = Syne({
   subsets: ["latin"],
