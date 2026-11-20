@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { parseGameMessage, withErrorReporter } from "@/lib/game-messages";
 import { type ScanIssue, scanGameHtml } from "@/lib/game-scan";
+import { withDocumentTitle } from "@/lib/game-title";
 
 export interface GamePlayerProps {
   /** Game HTML to run. Takes precedence over `src`. */
@@ -12,6 +13,11 @@ export interface GamePlayerProps {
   /** URL of a game file to fetch, scan and run (for example /games/runner.html). */
   src?: string;
   title: string;
+  /**
+   * The game's own name, written into the document's <title> before it runs so a game built on
+   * a starter template shows its name on the title screen. Leave unset to keep the file's title.
+   */
+  gameTitle?: string;
   onScore?: (score: number) => void;
   onError?: (message: string) => void;
   /** Called once the document passed the scan and is running. */
@@ -38,6 +44,7 @@ export function GamePlayer({
   html,
   src,
   title,
+  gameTitle,
   onScore,
   onError,
   onReady,
@@ -70,6 +77,7 @@ export function GamePlayer({
           source = await res.text();
         }
         if (cancelled) return;
+        if (gameTitle) source = withDocumentTitle(source, gameTitle);
         const scan = scanGameHtml(source);
         if (!scan.ok) {
           setIssues(scan.issues);
@@ -89,7 +97,7 @@ export function GamePlayer({
     return () => {
       cancelled = true;
     };
-  }, [html, src]);
+  }, [html, src, gameTitle]);
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
