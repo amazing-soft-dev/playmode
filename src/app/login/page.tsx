@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { LoginForm } from "@/components/auth/LoginForm";
-import { PageBanner } from "@/components/sections/PageBanner";
+import { PageHeader } from "@/components/sections/PageHeader";
 import { Section } from "@/components/ui";
 import { login } from "@/content/auth";
-import { photos } from "@/content/media";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -16,8 +15,8 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <>
-      <PageBanner photo={photos.bannerLogin} label={login.label} title={login.title} lead={login.lead} compact />
-      <Section>
+      <PageHeader label={login.label} title={login.title} lead={login.lead} />
+      <Section tightTop>
         <div className="container-site">
           <div className="mx-auto max-w-[560px]">
             <Suspense>
