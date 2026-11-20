@@ -5,11 +5,6 @@
 export const photos = {
   // Home page
   homeAbout: "home-about",
-  templateRunner: "template-runner",
-  templatePuzzle: "template-puzzle",
-  templateShooter: "template-shooter",
-  templateClicker: "template-clicker",
-  templateMaze: "template-maze",
   promoRecommend: "promo-recommend",
   promoDownload: "promo-download",
   ctaArcade: "cta-arcade",
