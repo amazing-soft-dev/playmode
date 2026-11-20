@@ -15,7 +15,7 @@ import { PromptBox } from "./PromptBox";
 export function HomeHero() {
   const { hero } = home;
   return (
-    <section className="relative isolate overflow-clip pt-[120px] pb-20 md:pt-[230px] lg:flex lg:min-h-svh lg:flex-col lg:justify-end lg:pt-[250px] lg:pb-[100px]">
+    <section className="relative isolate overflow-clip pt-[120px] pb-20 md:pt-[230px] lg:flex lg:min-h-[min(100svh,1080px)] lg:flex-col lg:justify-end lg:pt-[250px] lg:pb-[100px]">
       <div className="absolute inset-0 -z-10">
         <BackgroundVideo id={videos.hero} priority />
         <div className="absolute inset-0 bg-ink/30" />
