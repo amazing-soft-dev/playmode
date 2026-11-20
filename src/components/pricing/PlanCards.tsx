@@ -59,7 +59,7 @@ export function PlanCards({ offers }: { offers: PlanOffer[] }) {
                 </Button>
               ) : profile?.ageBand === "13to17" ? (
                 <div className="flex flex-col gap-2 border-l-2 border-accent pl-4">
-                  <p className="type-h4 text-[20px]">{pricing.teenTitle}</p>
+                  <p className="type-h5">{pricing.teenTitle}</p>
                   <p className="type-small text-fog">{pricing.teenText}</p>
                 </div>
               ) : (

@@ -217,6 +217,16 @@
   text-transform: uppercase;
 }
 
+/* Card titles (gallery cards, plan notes): the H4 style one step down. */
+@utility type-h5 {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
 @utility type-stat {
   font-family: var(--font-sans);
   font-weight: 500;
