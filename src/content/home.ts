@@ -13,7 +13,6 @@ export const hero = {
   promptLabel: "Describe your game",
   promptPlaceholder: "A fox running across autumn rooftops, collecting acorns…",
   promptCta: "Make it",
-  primary: { label: "Start creating", href: "/create" } satisfies Cta,
   secondary: { label: "Play today's challenge", href: "/daily" } satisfies Cta,
 };
 

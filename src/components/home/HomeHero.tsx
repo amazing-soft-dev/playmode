@@ -35,8 +35,8 @@ export function HomeHero() {
           <div className="flex w-full max-w-[400px] rise-700 flex-col gap-8 motion-reduce:animate-none">
             <p className="type-body text-fog">{hero.lead}</p>
             <PromptBox />
+            {/* The prompt box is the hero's one primary action; this quieter link is the other path. */}
             <div className="flex flex-wrap items-center justify-center gap-4 lg:justify-start">
-              <Button href={hero.primary.href}>{hero.primary.label}</Button>
               <Button href={hero.secondary.href} variant="link">
                 {hero.secondary.label}
               </Button>
