@@ -25,7 +25,12 @@ export function HomeHero() {
       <div className="container-site flex flex-col items-center gap-[60px] lg:items-stretch lg:gap-[160px]">
         <div className="flex max-w-[520px] flex-col items-center gap-10 text-center lg:max-w-none lg:flex-row lg:items-end lg:justify-between lg:text-left">
           <div className="rise-600 motion-reduce:animate-none lg:max-w-[640px]">
-            <h1 className="type-hero tracking-[-0.04em] text-balance-safe">{hero.title}</h1>
+            {/* From 1280px the headline takes the page-title weight and tracking and grows with the
+                screen, so it outranks the wordmark row below it (58px at 1280, 66px at 1440, 88px
+                from 1920). */}
+            <h1 className="type-hero tracking-[-0.04em] text-balance-safe lg:text-[clamp(58px,4.6vw,88px)] lg:leading-[1.1] lg:font-[500] lg:tracking-[-2px]">
+              {hero.title}
+            </h1>
           </div>
           <div className="flex w-full max-w-[400px] rise-700 flex-col gap-8 motion-reduce:animate-none">
             <p className="type-body text-fog">{hero.lead}</p>
