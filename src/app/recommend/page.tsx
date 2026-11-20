@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 
 import { RecommendFinder } from "@/components/recommend/RecommendFinder";
-import { PageBanner } from "@/components/sections/PageBanner";
+import { PageHeader } from "@/components/sections/PageHeader";
 import { Section } from "@/components/ui";
-import { photos } from "@/content/media";
 import { recommend } from "@/content/recommend";
 
 export const metadata: Metadata = {
@@ -14,14 +13,8 @@ export const metadata: Metadata = {
 export default function RecommendPage() {
   return (
     <>
-      <PageBanner
-        photo={photos.bannerRecommend}
-        label={recommend.label}
-        title={recommend.title}
-        lead={recommend.lead}
-        compact
-      />
-      <Section>
+      <PageHeader label={recommend.label} title={recommend.title} lead={recommend.lead} />
+      <Section tightTop>
         <div className="container-site">
           <RecommendFinder />
         </div>
