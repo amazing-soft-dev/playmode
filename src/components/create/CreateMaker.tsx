@@ -172,7 +172,7 @@ export function CreateMaker({ onBuilt }: { onBuilt?: (game: BuiltGame) => void }
               maxLength={POLICY.promptMaxChars}
               rows={5}
               placeholder={info.examplePrompt}
-              className="min-h-36 resize-y border border-line bg-ink px-4 py-3 type-body text-paper placeholder:text-ash focus:border-accent focus:outline-none"
+              className="min-h-36 resize-y border border-ash bg-ink px-4 py-3 type-body text-paper placeholder:text-ash focus:border-accent focus:outline-none"
             />
             <div className="flex justify-between gap-4 type-small text-ash">
               <span>{create.promptHint}</span>

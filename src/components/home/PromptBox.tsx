@@ -12,7 +12,7 @@ export function PromptBox() {
       <label htmlFor="hero-prompt" className="type-label text-fog">
         {home.hero.promptLabel}
       </label>
-      <div className="flex border border-paper/30 bg-ink/50 transition-colors duration-300 ease-snap focus-within:border-accent hover:border-paper/60">
+      <div className="flex border border-ash bg-ink/50 transition-colors duration-300 ease-snap focus-within:border-accent hover:border-fog">
         <input
           id="hero-prompt"
           name="prompt"

@@ -118,7 +118,7 @@ export function SiteSearch() {
               className="w-full max-w-[800px] bg-line shadow-[0_0_50px_0_rgba(198,255,61,0.18)]"
             >
               <div className="flex items-center gap-3 px-5 py-3">
-                <SearchIcon className="size-4 shrink-0 text-paper/30" />
+                <SearchIcon className="size-4 shrink-0 text-fog" />
                 <input
                   ref={inputRef}
                   type="search"
@@ -133,7 +133,7 @@ export function SiteSearch() {
                   aria-expanded={results.length > 0}
                   aria-controls={listId}
                   aria-activedescendant={results[active] ? `${listId}-${active}` : undefined}
-                  className="h-[31px] w-full bg-transparent type-body text-paper placeholder:text-paper/30 focus:outline-none"
+                  className="h-[31px] w-full bg-transparent type-body text-paper placeholder:text-fog focus:outline-none"
                 />
                 <kbd className="hidden type-label text-ash sm:block">Esc</kbd>
               </div>
