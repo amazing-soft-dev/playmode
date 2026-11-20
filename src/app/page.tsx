@@ -8,17 +8,20 @@ import { HowItWorks } from "@/components/home/HowItWorks";
 import { StatsSection } from "@/components/home/StatsSection";
 import { TrendingGames } from "@/components/home/TrendingGames";
 
-/** Home page sections in the template's order, with PlayerMode content. */
+/**
+ * Home page sections. The template's section styles, in a games-first order: today's challenge,
+ * the templates and community games come straight after the hero, then how it works and why.
+ */
 export default function HomePage() {
   return (
     <>
       <HomeHero />
+      <DailyTemplates />
+      <TrendingGames />
       <HowItWorks />
       <AboutSection />
       <StatsSection />
-      <DailyTemplates />
       <FeaturePromos />
-      <TrendingGames />
       <FeaturedCreators />
       <FinalCta />
     </>
