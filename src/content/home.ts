@@ -11,7 +11,8 @@ export const hero = {
   title: "Describe a game. Play it a minute later.",
   lead: "PlayerMode turns a few words into a playable HTML5 game. Pick a starter, say what you want, and play it in your browser. No code, no installs.",
   promptLabel: "Describe your game",
-  promptPlaceholder: "A fox running across autumn rooftops, collecting acorns…",
+  // Short enough to show whole in the input: about 19 mono characters fit on a 375px phone.
+  promptPlaceholder: "A fox on rooftops",
   promptCta: "Make it",
   secondary: { label: "Play today's challenge", href: "/daily" } satisfies Cta,
 };
