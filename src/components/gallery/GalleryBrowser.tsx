@@ -74,7 +74,8 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
               onKeyDown={(e) => onTabKey(e, i)}
               onClick={() => setTab(t.id)}
               className={cn(
-                "border-b-2 pb-2 type-nav transition-colors duration-[400ms] ease-snap",
+                // 44px tall for touch; the label sits on the underline as before.
+                "inline-flex min-h-11 items-end border-b-2 pb-2 type-nav transition-colors duration-[400ms] ease-snap",
                 tab === t.id ? "border-accent text-accent" : "border-transparent text-fog hover:text-paper",
               )}
             >
@@ -83,7 +84,12 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
           ))}
         </div>
         {tab === "top-week" && <p className="type-small text-ash">{gallery.weeklyNote}</p>}
-        <div className="flex flex-wrap gap-2" aria-label="Filter by tag">
+        {/* Below 768px the tags scroll sideways in one row, edge to edge, so 22 chips don't wrap
+            into seven rows that push every game off the first screen. */}
+        <div
+          className="-mx-(--gutter) flex gap-2 overflow-x-auto px-(--gutter) pb-1 max-sm:flex-nowrap sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+          aria-label="Filter by tag"
+        >
           <Chip selected={tag === null} onClick={() => setTag(null)}>
             {gallery.allTags}
           </Chip>
