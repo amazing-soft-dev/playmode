@@ -3,8 +3,8 @@ import { type ComponentPropsWithoutRef, type ReactNode, useId } from "react";
 import { cn } from "@/lib/cn";
 
 const control =
-  "type-body w-full border border-line bg-ink px-4 text-paper placeholder:text-ash transition-colors duration-200 " +
-  "hover:border-ash focus:border-accent focus:outline-none aria-invalid:border-danger disabled:opacity-50";
+  "type-body w-full border border-ash bg-ink px-4 text-paper placeholder:text-ash transition-colors duration-200 " +
+  "hover:border-fog focus:border-accent focus:outline-none aria-invalid:border-danger disabled:opacity-50";
 
 interface FieldProps {
   label: ReactNode;
