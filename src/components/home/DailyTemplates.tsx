@@ -63,9 +63,18 @@ export function DailyTemplates() {
           </Reveal>
         </div>
 
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+        {/* Five cards without squeezing: from 1280px two featured cards over three (a six-column
+            grid, spans 3 + 3 / 2 + 2 + 2); in two columns the first card spans the row so no
+            card is left alone at the end. */}
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
           {TEMPLATES.map((t, i) => (
-            <Reveal as="li" key={t.id} index={i} duration={0.7}>
+            <Reveal
+              as="li"
+              key={t.id}
+              index={i}
+              duration={0.7}
+              className={i === 0 ? "sm:col-span-2 lg:col-span-3" : i === 1 ? "lg:col-span-3" : "lg:col-span-2"}
+            >
               <Card interactive className="h-full">
                 <Link href={`/create?template=${t.id}`} className="flex h-full flex-col">
                   <span className="relative block aspect-[4/3] overflow-hidden">
