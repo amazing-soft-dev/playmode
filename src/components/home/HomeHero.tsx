@@ -44,7 +44,7 @@ export function HomeHero() {
           </div>
         </div>
         <div className="rise-800 motion-reduce:animate-none">
-          <WordmarkRow />
+          <WordmarkRow compact />
         </div>
       </div>
     </section>
