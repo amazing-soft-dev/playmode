@@ -1,22 +1,17 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { Media } from "@/components/media/Media";
 import { Reveal } from "@/components/motion";
 import { ArrowIcon, BracketLabel, Button, Card, Muted, Section } from "@/components/ui";
-import { photos, type PhotoSlot } from "@/content/media";
+import { photos } from "@/content/media";
 import { home } from "@/content/site";
-import type { TemplateId } from "@/lib/domain/types";
 import { TEMPLATES } from "@/lib/fixtures/templates";
 
 import { Countdown } from "./Countdown";
 
-const TEMPLATE_PHOTO: Record<TemplateId, PhotoSlot> = {
-  runner: "templateRunner",
-  puzzle: "templatePuzzle",
-  shooter: "templateShooter",
-  clicker: "templateClicker",
-  maze: "templateMaze",
-};
+/** Each template card shows its own game in play (npm run games:shots), not a stock photo. */
+const shot = (id: string) => `/games/shots/${id}.webp`;
 
 /**
  * Daily challenge highlight plus the five starter templates, in the template's tournament-card
@@ -63,16 +58,27 @@ export function DailyTemplates() {
           </Reveal>
         </div>
 
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+        {/* Five cards without squeezing: from 1280px two featured cards over three (a six-column
+            grid, spans 3 + 3 / 2 + 2 + 2); in two columns the first card spans the row so no
+            card is left alone at the end. */}
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
           {TEMPLATES.map((t, i) => (
-            <Reveal as="li" key={t.id} index={i} duration={0.7}>
+            <Reveal
+              as="li"
+              key={t.id}
+              index={i}
+              duration={0.7}
+              className={i === 0 ? "sm:col-span-2 lg:col-span-3" : i === 1 ? "lg:col-span-3" : "lg:col-span-2"}
+            >
               <Card interactive className="h-full">
                 <Link href={`/create?template=${t.id}`} className="flex h-full flex-col">
                   <span className="relative block aspect-[4/3] overflow-hidden">
-                    <Media
-                      id={photos[TEMPLATE_PHOTO[t.id]]}
-                      sizes="(min-width: 1280px) 20vw, (min-width: 768px) 50vw, 100vw"
-                      zoomOnHover
+                    <Image
+                      src={shot(t.id)}
+                      alt={`${t.sampleTitle} in play`}
+                      fill
+                      sizes="(min-width: 1280px) 45vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-[600ms] ease-snap group-hover/card:scale-110"
                     />
                   </span>
                   <span className="flex flex-1 flex-col gap-4 p-5">
@@ -80,7 +86,7 @@ export function DailyTemplates() {
                     <span className="type-h4 transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
                       {t.sampleTitle}
                     </span>
-                    <span className="font-mono text-[12px] leading-[1.2] text-ash uppercase">{t.controls}</span>
+                    <span className="type-small text-ash uppercase">{t.controls}</span>
                     <span className="flex-1 type-small text-fog">{t.summary}</span>
                     <span className="inline-flex items-center gap-2 type-caps transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
                       Use this template

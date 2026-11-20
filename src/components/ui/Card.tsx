@@ -60,7 +60,7 @@ export function Chip({
       type="button"
       aria-pressed={selected}
       className={cn(
-        "inline-flex h-9 items-center border px-4 type-label transition-colors duration-200",
+        "inline-flex h-11 items-center border px-4 type-label transition-colors duration-200 sm:h-9",
         selected
           ? "border-accent bg-accent text-accent-ink"
           : "border-line text-fog hover:border-accent hover:text-accent",

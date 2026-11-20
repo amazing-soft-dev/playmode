@@ -86,8 +86,9 @@
     background: var(--color-ink);
     color: var(--color-paper);
     font-family: var(--font-mono);
-    font-size: 14px;
-    font-weight: 300;
+    /* 16px Regular: readable for young players on black (the template used 14px Light). */
+    font-size: 16px;
+    font-weight: 400;
     line-height: 1.5;
     overflow-x: clip;
     -webkit-font-smoothing: antialiased;
@@ -145,7 +146,7 @@
 
 /*
  * Type scale from the template audit. Headings are uppercase Host Grotesk with tight tracking;
- * body copy and labels are light Geist Mono. Sizes step down at 992 px and 768 px.
+ * body copy is Geist Mono Regular and labels Geist Mono Light. Sizes step down at 992 px and 768 px.
  */
 @utility type-wordmark {
   font-family: var(--font-display);
@@ -217,6 +218,16 @@
   text-transform: uppercase;
 }
 
+/* Card titles (gallery cards, plan notes): the H4 style one step down. */
+@utility type-h5 {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
 @utility type-stat {
   font-family: var(--font-sans);
   font-weight: 500;
@@ -225,17 +236,18 @@
   letter-spacing: -3px;
 }
 
+/* Running text uses Regular (400); Light (300) stays for short uppercase labels only. */
 @utility type-body {
   font-family: var(--font-mono);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.5;
 }
 
 @utility type-small {
   font-family: var(--font-mono);
-  font-weight: 300;
-  font-size: 14px;
+  font-weight: 400;
+  font-size: 15px;
   line-height: 1.5;
 }
 

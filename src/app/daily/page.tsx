@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 
 import { DailyChallenge } from "@/components/daily/DailyChallenge";
-import { PageBanner } from "@/components/sections/PageBanner";
+import { PageHeader } from "@/components/sections/PageHeader";
 import { Section } from "@/components/ui";
 import { daily } from "@/content/daily";
-import { photos } from "@/content/media";
 
 export const metadata: Metadata = {
   title: "Daily challenge",
@@ -14,8 +13,8 @@ export const metadata: Metadata = {
 export default function DailyPage() {
   return (
     <>
-      <PageBanner photo={photos.bannerDaily} label={daily.label} title={daily.title} lead={daily.lead} compact />
-      <Section>
+      <PageHeader label={daily.label} title={daily.title} lead={daily.lead} />
+      <Section tightTop>
         <div className="container-site">
           <DailyChallenge />
         </div>

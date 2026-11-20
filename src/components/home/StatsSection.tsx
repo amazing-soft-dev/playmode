@@ -23,16 +23,18 @@ export function StatsSection() {
                 key={stat.label}
                 index={i}
                 duration={0.7}
-                className="flex w-[250px] flex-col gap-[15px] md:w-auto md:flex-1"
+                className="flex w-[250px] min-w-0 flex-col gap-[15px] md:w-auto md:flex-1"
               >
-                <div className="flex items-start gap-2">
+                {/* Number above label until 1280px: side by side they need ~270px each, wider than a
+                    quarter of the strip at 992–1279px, which pushed the last stat off the page. */}
+                <div className="flex flex-col items-start gap-2 lg:flex-row">
                   <CountUp
                     to={stat.value}
                     suffix={stat.suffix}
                     prefix={stat.prefix}
                     className="type-stat font-semibold tabular-nums"
                   />
-                  <BracketLabel accent className="mt-1.5">
+                  <BracketLabel accent className="lg:mt-1.5">
                     {stat.label}
                   </BracketLabel>
                 </div>

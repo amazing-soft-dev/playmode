@@ -12,6 +12,7 @@ import { anonymousId } from "@/lib/anon-id";
 import type { Game, ReportReason } from "@/lib/domain/types";
 import { LICENSE_NAMES, saveFile, slugify, withLicenseHeader } from "@/lib/download";
 import { templateInfo } from "@/lib/fixtures/templates";
+import { withDocumentTitle } from "@/lib/game-title";
 import { browserRepos } from "@/lib/repos";
 import { cn } from "@/lib/cn";
 
@@ -117,7 +118,11 @@ export function PlayView({ id: routeId }: { id: string }) {
     const finish = (text: string) =>
       saveFile(
         `${slugify(game.title)}.html`,
-        withLicenseHeader(text, { title: game.title, creator: game.ownerName, license: game.license }),
+        withLicenseHeader(withDocumentTitle(text, game.title), {
+          title: game.title,
+          creator: game.ownerName,
+          license: game.license,
+        }),
         "text/html",
       );
     if (source) finish(source);
@@ -152,6 +157,7 @@ export function PlayView({ id: routeId }: { id: string }) {
             html={html ?? undefined}
             src={html ? undefined : (src ?? undefined)}
             title={game.title}
+            gameTitle={game.title}
             aspect={info.aspect}
           />
         ) : (
@@ -183,7 +189,7 @@ export function PlayView({ id: routeId }: { id: string }) {
               aria-pressed={liked}
               disabled={liked}
               className={cn(
-                "inline-flex items-center gap-2 type-caps transition-colors",
+                "inline-flex min-h-6 items-center gap-2 type-caps transition-colors max-sm:min-h-11",
                 liked ? "text-accent" : "hover:text-accent",
               )}
             >
@@ -192,7 +198,7 @@ export function PlayView({ id: routeId }: { id: string }) {
           ) : (
             <Link
               href={`/login?next=${encodeURIComponent(`/play/${routeId === "local" ? `local?id=${id}` : id}`)}`}
-              className="inline-flex items-center gap-2 type-caps hover:text-accent"
+              className="inline-flex min-h-6 items-center gap-2 type-caps hover:text-accent max-sm:min-h-11"
             >
               <HeartIcon className="size-4" /> {likes.toLocaleString("en-US")}
             </Link>
@@ -201,18 +207,22 @@ export function PlayView({ id: routeId }: { id: string }) {
             <button
               type="button"
               onClick={download}
-              className="inline-flex items-center gap-2 type-caps hover:text-accent"
+              className="inline-flex min-h-6 items-center gap-2 type-caps hover:text-accent max-sm:min-h-11"
             >
               <DownloadIcon className="size-4" /> Download
             </button>
           )}
-          <button type="button" onClick={share} className="type-caps hover:text-accent">
+          <button
+            type="button"
+            onClick={share}
+            className="inline-flex min-h-6 items-center type-caps hover:text-accent max-sm:min-h-11"
+          >
             Share
           </button>
           <button
             type="button"
             onClick={() => setReportOpen((v) => !v)}
-            className="ml-auto inline-flex items-center gap-2 type-caps text-ash hover:text-accent"
+            className="ml-auto inline-flex min-h-6 items-center gap-2 type-caps text-ash hover:text-accent max-sm:min-h-11"
           >
             <FlagIcon className="size-4" /> Report
           </button>

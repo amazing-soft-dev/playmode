@@ -26,3 +26,7 @@ audited pixel values (H2 −1px, H3 −0.5px, page titles −2px, stat numbers �
 Intentional differences: the accent is neon lime instead of the template's blue, corners and
 focus rings follow the PlayerMode design, and the home page has five template cards where the
 template has four tournament cards.
+
+Follow-up (2026-11-19, #170): the one-row stats strip overflowed between 993 and about 1050px,
+widths this table does not sample. Below 1280px each stat now stacks its number over its label.
+Checked with no horizontal overflow at 768, 993, 1024, 1279 and 1440.

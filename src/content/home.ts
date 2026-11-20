@@ -3,17 +3,18 @@ import { POLICY } from "@/lib/domain/policy";
 import type { Cta, Heading, Stat, Step } from "./types";
 
 /**
- * Home page copy, section by section, in the order of the template's home page:
- * hero, wordmark banner, about, stats, templates, promos, trending, creators, call to action.
+ * Home page copy, one export per section. The page order (src/app/page.tsx) is games first:
+ * hero, daily challenge and templates, trending, how it works, about, stats, promos, creators,
+ * call to action.
  */
 
 export const hero = {
   title: "Describe a game. Play it a minute later.",
   lead: "PlayerMode turns a few words into a playable HTML5 game. Pick a starter, say what you want, and play it in your browser. No code, no installs.",
   promptLabel: "Describe your game",
-  promptPlaceholder: "A fox running across autumn rooftops, collecting acorns…",
+  // Short enough to show whole in the input: about 19 mono characters fit on a 375px phone.
+  promptPlaceholder: "A fox on rooftops",
   promptCta: "Make it",
-  primary: { label: "Start creating", href: "/create" } satisfies Cta,
   secondary: { label: "Play today's challenge", href: "/daily" } satisfies Cta,
 };
 

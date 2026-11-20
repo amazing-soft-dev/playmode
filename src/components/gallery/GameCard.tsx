@@ -23,7 +23,7 @@ export function GameCard({ game, priority = false }: { game: Game; priority?: bo
           )}
         </span>
         <span className="flex flex-1 flex-col gap-3 p-5">
-          <span className="type-h4 text-[22px] transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
+          <span className="type-h5 transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
             {game.title}
           </span>
           <span className="line-clamp-2 flex-1 type-small text-fog">{game.description}</span>

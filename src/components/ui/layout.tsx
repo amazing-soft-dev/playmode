@@ -31,13 +31,22 @@ export function Container({ className, ...props }: ComponentPropsWithoutRef<"div
   return <div className={cn("container-site", className)} {...props} />;
 }
 
-/** A page section with the responsive vertical rhythm and an optional top rule. */
+/**
+ * A page section with the responsive vertical rhythm and an optional top rule. `tightTop` keeps
+ * the bottom rhythm but starts close to the content above (used right under a PageHeader).
+ */
 export function Section({
   className,
   ruled = false,
+  tightTop = false,
   ...props
-}: ComponentPropsWithoutRef<"section"> & { ruled?: boolean }) {
-  return <section className={cn("section-y", ruled && "border-t border-line", className)} {...props} />;
+}: ComponentPropsWithoutRef<"section"> & { ruled?: boolean; tightTop?: boolean }) {
+  return (
+    <section
+      className={cn(tightTop ? "pt-4 pb-(--section) md:pt-6" : "section-y", ruled && "border-t border-line", className)}
+      {...props}
+    />
+  );
 }
 
 /**

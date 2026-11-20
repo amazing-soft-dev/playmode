@@ -52,19 +52,20 @@ See [docs/architecture.md](docs/architecture.md) for how it fits together and
 
 ## Scripts
 
-| Script                            | What it does                                                            |
-| --------------------------------- | ----------------------------------------------------------------------- |
-| `npm run dev`                     | Development server (Turbopack)                                          |
-| `npm run build`                   | Production build. Add `NEXT_OUTPUT=export` for the static target        |
-| `npm run start`                   | Serve the server build                                                  |
-| `npm run lint`                    | ESLint, fails on any warning                                            |
-| `npm run typecheck`               | TypeScript 7 `tsc --noEmit`                                             |
-| `npm test`                        | Unit tests with `node --test`                                           |
-| `npm run check:images`            | Media manifest check: files exist, credited, each photo used once       |
-| `npm run images`                  | Pre-build responsive WebP variants for the static export                |
-| `npm run verify:export`           | Check `out/` after a static build                                       |
-| `npm run format` / `format:check` | Prettier with Tailwind class sorting                                    |
-| `npm run audit:inspector`         | Build the template audit inspector into `.research/audit/` (local only) |
+| Script                            | What it does                                                             |
+| --------------------------------- | ------------------------------------------------------------------------ |
+| `npm run dev`                     | Development server (Turbopack)                                           |
+| `npm run build`                   | Production build. Add `NEXT_OUTPUT=export` for the static target         |
+| `npm run start`                   | Serve the server build                                                   |
+| `npm run lint`                    | ESLint, fails on any warning                                             |
+| `npm run typecheck`               | TypeScript 7 `tsc --noEmit`                                              |
+| `npm test`                        | Unit tests with `node --test`                                            |
+| `npm run check:images`            | Media manifest check: files exist, credited, each photo used once        |
+| `npm run images`                  | Pre-build responsive WebP variants for the static export                 |
+| `npm run games:shots`             | Capture the starter games mid-play for the template cards (needs Chrome) |
+| `npm run verify:export`           | Check `out/` after a static build                                        |
+| `npm run format` / `format:check` | Prettier with Tailwind class sorting                                     |
+| `npm run audit:inspector`         | Build the template audit inspector into `.research/audit/` (local only)  |
 
 ## Build targets
 

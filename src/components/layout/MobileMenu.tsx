@@ -64,6 +64,7 @@ export function MobileMenu() {
 
   return (
     <div ref={wrapRef} className="md:hidden" onKeyDown={(e) => open && trapFocus(e, wrapRef.current)}>
+      {/* 44px touch target; the negative margin keeps the 22px icon on the gutter edge as before. */}
       <button
         ref={buttonRef}
         type="button"
@@ -71,7 +72,7 @@ export function MobileMenu() {
         aria-controls={panelId}
         aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpen((v) => !v)}
-        className="flex size-[22px] items-center justify-center transition-colors duration-[400ms] ease-snap hover:text-accent"
+        className="-mr-[11px] flex size-11 items-center justify-center transition-colors duration-[400ms] ease-snap hover:text-accent"
       >
         {open ? <CloseIcon className="size-[22px]" /> : <MenuIcon className="size-[22px]" />}
       </button>
@@ -102,7 +103,7 @@ export function MobileMenu() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Type to filter"
-                  className="h-11 border-b border-line bg-transparent type-body text-paper placeholder:text-ash focus:border-accent focus:outline-none"
+                  className="h-11 border-b border-ash bg-transparent type-body text-paper placeholder:text-ash focus:border-accent focus:outline-none"
                 />
               </label>
               {groups.length === 0 && <p className="text-fog">No page matches “{query}”.</p>}
