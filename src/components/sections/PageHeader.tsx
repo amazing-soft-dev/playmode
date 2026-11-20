@@ -20,7 +20,7 @@ interface PageHeaderProps {
  */
 export function PageHeader({ title, label, lead, action }: PageHeaderProps) {
   return (
-    <section className="pt-[110px] pb-10 md:pt-[130px]">
+    <section className="pt-[96px] pb-8 md:pt-[104px]">
       <div className="container-site flex rise-600 flex-col gap-6 motion-reduce:animate-none lg:flex-row lg:items-end lg:justify-between lg:gap-[60px]">
         <div className="flex max-w-[760px] flex-col gap-5">
           {label && <BracketLabel accent>{label}</BracketLabel>}
