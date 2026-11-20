@@ -74,7 +74,8 @@ export function GalleryBrowser({ initialGames, initialTags }: { initialGames: Ga
               onKeyDown={(e) => onTabKey(e, i)}
               onClick={() => setTab(t.id)}
               className={cn(
-                "border-b-2 pb-2 type-nav transition-colors duration-[400ms] ease-snap",
+                // 44px tall for touch; the label sits on the underline as before.
+                "inline-flex min-h-11 items-end border-b-2 pb-2 type-nav transition-colors duration-[400ms] ease-snap",
                 tab === t.id ? "border-accent text-accent" : "border-transparent text-fog hover:text-paper",
               )}
             >
