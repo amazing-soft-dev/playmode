@@ -1,22 +1,17 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { Media } from "@/components/media/Media";
 import { Reveal } from "@/components/motion";
 import { ArrowIcon, BracketLabel, Button, Card, Muted, Section } from "@/components/ui";
-import { photos, type PhotoSlot } from "@/content/media";
+import { photos } from "@/content/media";
 import { home } from "@/content/site";
-import type { TemplateId } from "@/lib/domain/types";
 import { TEMPLATES } from "@/lib/fixtures/templates";
 
 import { Countdown } from "./Countdown";
 
-const TEMPLATE_PHOTO: Record<TemplateId, PhotoSlot> = {
-  runner: "templateRunner",
-  puzzle: "templatePuzzle",
-  shooter: "templateShooter",
-  clicker: "templateClicker",
-  maze: "templateMaze",
-};
+/** Each template card shows its own game in play (npm run games:shots), not a stock photo. */
+const shot = (id: string) => `/games/shots/${id}.webp`;
 
 /**
  * Daily challenge highlight plus the five starter templates, in the template's tournament-card
@@ -69,10 +64,12 @@ export function DailyTemplates() {
               <Card interactive className="h-full">
                 <Link href={`/create?template=${t.id}`} className="flex h-full flex-col">
                   <span className="relative block aspect-[4/3] overflow-hidden">
-                    <Media
-                      id={photos[TEMPLATE_PHOTO[t.id]]}
-                      sizes="(min-width: 1280px) 20vw, (min-width: 768px) 50vw, 100vw"
-                      zoomOnHover
+                    <Image
+                      src={shot(t.id)}
+                      alt={`${t.sampleTitle} in play`}
+                      fill
+                      sizes="(min-width: 1280px) 45vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-[600ms] ease-snap group-hover/card:scale-110"
                     />
                   </span>
                   <span className="flex flex-1 flex-col gap-4 p-5">
