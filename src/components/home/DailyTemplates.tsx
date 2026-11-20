@@ -80,7 +80,7 @@ export function DailyTemplates() {
                     <span className="type-h4 transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
                       {t.sampleTitle}
                     </span>
-                    <span className="font-mono text-[12px] leading-[1.2] text-ash uppercase">{t.controls}</span>
+                    <span className="type-small text-ash uppercase">{t.controls}</span>
                     <span className="flex-1 type-small text-fog">{t.summary}</span>
                     <span className="inline-flex items-center gap-2 type-caps transition-colors duration-[400ms] ease-snap group-hover/card:text-accent">
                       Use this template
