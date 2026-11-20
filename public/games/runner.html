@@ -39,8 +39,10 @@ const SCORE_MIN = 0, SCORE_MAX = 100000;
 const COL = { bg: "#000", fg: "#fff", grey: "#7b7878", dark: "#333", accent: "#C6FF3D" };
 const FONT = "ui-monospace, monospace";
 const REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+// The title comes from <title>, so a game made from this template shows its own name.
+const GAME_TITLE = (document.title || "NEON DASH").trim().toUpperCase();
 
-const GROUND_Y = 222;                 // top of the floor line
+const GROUND_Y = 222;                // top of the floor line
 const GRAVITY = 1900;                 // px / s^2
 const JUMP_V = 610, DOUBLE_V = 540;   // jump impulses
 const CUT_V = 330;                    // releasing early caps upward speed (short hop)
@@ -48,6 +50,7 @@ const BASE_SPEED = 230, MAX_SPEED = 560, ACCEL = 6.5; // px/s, px/s per second
 
 // ------------------------------------------------------------ CANVAS + LETTERBOX
 const canvas = document.getElementById("game");
+canvas.setAttribute("aria-label", GAME_TITLE + " - endless runner game");
 const ctx = canvas.getContext("2d");
 const view = { scale: 1, ox: 0, oy: 0, dpr: 1 };
 
@@ -85,6 +88,12 @@ function text(str, x, y, size, color, align, bold) {
   ctx.textAlign = align || "center";
   ctx.textBaseline = "middle";
   ctx.fillText(str, x, y);
+}
+// Largest bold size up to `max` at which `str` fits the view with a 20px margin each side.
+function fitSize(str, max) {
+  ctx.font = "bold " + max + "px " + FONT;
+  const w = ctx.measureText(str).width;
+  return w > VIEW_W - 40 ? Math.floor((max * (VIEW_W - 40)) / w) : max;
 }
 function pad(n, len) { return String(Math.max(0, Math.floor(n))).padStart(len, "0"); }
 
@@ -448,7 +457,7 @@ function blinkOn() { return REDUCED || Math.floor(clock * 2.2) % 2 === 0; }
 
 function drawTitle() {
   overlay(0.55);
-  text("NEON DASH", VIEW_W / 2, 66, 36, COL.fg, "center", true);
+  text(GAME_TITLE, VIEW_W / 2, 66, fitSize(GAME_TITLE, 36), COL.fg, "center", true);
   ctx.fillStyle = COL.accent;
   ctx.fillRect(VIEW_W / 2 - 96, 90, 192, 3);
   text("[ RUN. JUMP. DON'T STOP. ]", VIEW_W / 2, 106, 10, COL.grey);
